@@ -9,17 +9,6 @@ CREATE TABLE public.tenants (
     schema_name varchar(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE public.exercise_categories (
-    id integer PRIMARY KEY,
-    name varchar(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE public.exercises (
-    id serial PRIMARY KEY,
-    name varchar(50) NOT NULL UNIQUE,
-    category_id integer NOT NULL REFERENCES exercise_categories(id)
-);
-
 CREATE TABLE public.roles (
     id integer PRIMARY KEY,
     name varchar(30) NOT NULL UNIQUE
@@ -32,3 +21,6 @@ CREATE TABLE public.users (
     tenant_id integer NOT NULL REFERENCES tenants(id),
     UNIQUE (email, tenant_id)
 );
+
+CREATE TYPE duration_unit AS ENUM ('duration_day', 'duration_week', 'duration_month', 'duration_year');
+CREATE TYPE membership_status AS ENUM ('membership_active', 'membership_pending', 'membership_expired', 'membership_canceled');
