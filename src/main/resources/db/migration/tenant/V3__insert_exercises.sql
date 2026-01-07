@@ -1,4 +1,4 @@
-INSERT INTO public.exercises (name, category_id) VALUES
+INSERT INTO exercises (name, category_id) VALUES
 -- Peito
 ('Supino reto', 1),
 ('Supino inclinado', 1),
@@ -58,7 +58,7 @@ INSERT INTO public.exercises (name, category_id) VALUES
 -- Posterior de coxa
 ('Mesa flexora', 10),
 ('Stiff', 10),
-('Cadeira flexora', 9),
+('Cadeira flexora', 10),
 ('Flexora unilateral em pé', 10),
 
 -- Glúteo

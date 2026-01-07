@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE public.tenants (
-    id serial PRIMARY KEY,
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     cnpj varchar(14) NOT NULL UNIQUE,
     postal_code varchar(8) NOT NULL,
     trade_name varchar(100) NULL UNIQUE,
@@ -15,7 +15,7 @@ CREATE TABLE public.roles (
 );
 
 CREATE TABLE public.users (
-    id serial PRIMARY KEY,
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     email varchar(70) NOT NULL,
     password_hash varchar(60) NOT NULL,
     tenant_id integer NOT NULL REFERENCES tenants(id),
