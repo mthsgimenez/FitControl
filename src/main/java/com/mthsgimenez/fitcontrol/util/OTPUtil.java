@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.otp;
+package com.mthsgimenez.fitcontrol.util;
 
 import lombok.Getter;
 
@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-public class OTP {
+public class OTPUtil {
     @Getter
     private final String OTP;
     @Getter
@@ -17,7 +17,7 @@ public class OTP {
 
     private static final SecureRandom rnd = new SecureRandom();
 
-    public OTP() {
+    public OTPUtil() {
         this.OTP = generateOTP();
         this.issuedAt = Instant.now();
         this.expirationDate = issuedAt.plus(Duration.of(5, ChronoUnit.MINUTES));
