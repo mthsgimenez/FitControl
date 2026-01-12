@@ -9,6 +9,19 @@ spring:
       ddl-auto: validate
   flyway:
     locations: classpath:db/migration/public
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        from: ${SMTP_FROM}
+    default-encoding: utf-8
 
 ---
 spring:
@@ -16,14 +29,18 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/fitcontrol
-    username: postgres
-    password: root
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fitcontrol}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+  mail:
+    properties:
+      mail:
+        debug: true
 
 ---
 spring:
@@ -32,5 +49,5 @@ spring:
       on-profile: prod
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
