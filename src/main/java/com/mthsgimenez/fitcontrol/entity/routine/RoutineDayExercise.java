@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "routine_day_exercises", schema = "public", uniqueConstraints = {@UniqueConstraint(name = "routine_day_exercises_exercise_order_routine_day_id_key",
+@Table(name = "routine_day_exercises", uniqueConstraints = {@UniqueConstraint(name = "routine_day_exercises_exercise_order_routine_day_id_key",
         columnNames = {
                 "exercise_order",
                 "routine_day_id"})})

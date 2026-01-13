@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "exercise_categories", schema = "public", uniqueConstraints = {@UniqueConstraint(name = "exercise_categories_name_key",
+@Table(name = "exercise_categories", uniqueConstraints = {@UniqueConstraint(name = "exercise_categories_name_key",
         columnNames = {"name"})})
 public class ExerciseCategory {
     @Id

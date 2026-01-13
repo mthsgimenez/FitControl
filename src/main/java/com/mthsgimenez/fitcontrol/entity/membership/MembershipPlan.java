@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-@Table(name = "membership_plans", schema = "public", uniqueConstraints = {@UniqueConstraint(name = "membership_plans_name_key",
+@Table(name = "membership_plans", uniqueConstraints = {@UniqueConstraint(name = "membership_plans_name_key",
         columnNames = {"name"})})
 public class MembershipPlan {
     @Id
