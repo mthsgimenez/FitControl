@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.util;
+package com.mthsgimenez.fitcontrol.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

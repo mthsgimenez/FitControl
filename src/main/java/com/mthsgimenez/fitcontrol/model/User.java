@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,6 +20,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "uuid", columnDefinition = "uuid", updatable = false, nullable = false, unique = true)
+    private UUID uuid;
 
     @Column(name = "email", nullable = false, length = 70)
     private String email;
