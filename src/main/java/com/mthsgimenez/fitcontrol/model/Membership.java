@@ -1,6 +1,5 @@
-package com.mthsgimenez.fitcontrol.entity.membership;
+package com.mthsgimenez.fitcontrol.model;
 
-import com.mthsgimenez.fitcontrol.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

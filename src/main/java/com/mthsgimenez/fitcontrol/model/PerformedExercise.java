@@ -1,6 +1,5 @@
-package com.mthsgimenez.fitcontrol.entity.routine;
+package com.mthsgimenez.fitcontrol.model;
 
-import com.mthsgimenez.fitcontrol.entity.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +9,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "routine_day_exercises", uniqueConstraints = {@UniqueConstraint(name = "routine_day_exercises_exercise_order_routine_day_id_key",
+@Table(name = "performed_exercises", schema = "public", uniqueConstraints = {@UniqueConstraint(name = "performed_exercises_workout_id_exercise_order_key",
         columnNames = {
-                "exercise_order",
-                "routine_day_id"})})
-public class RoutineDayExercise {
+                "workout_id",
+                "exercise_order"})})
+public class PerformedExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -22,8 +21,8 @@ public class RoutineDayExercise {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "routine_day_id", nullable = false)
-    private RoutineDay routineDay;
+    @JoinColumn(name = "workout_id", nullable = false)
+    private Workout workout;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "exercise_id", nullable = false)
@@ -31,15 +30,6 @@ public class RoutineDayExercise {
 
     @Column(name = "exercise_order", nullable = false)
     private Integer exerciseOrder;
-
-    @Column(name = "reps", nullable = false)
-    private Integer reps;
-
-    @Column(name = "series", nullable = false)
-    private Integer series;
-
-    @Column(name = "notes", length = Integer.MAX_VALUE)
-    private String notes;
 
 
 }

@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.entity.membership;
+package com.mthsgimenez.fitcontrol.model;
 
 public enum MembershipStatus {
     MEMBERSHIP_ACTIVE,

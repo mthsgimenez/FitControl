@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.entity.routine;
+package com.mthsgimenez.fitcontrol.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,11 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "routines", uniqueConstraints = {@UniqueConstraint(name = "routines_name_member_id_key",
-        columnNames = {
-                "name",
-                "member_id"})})
-public class Routine {
+@Table(name = "routine_templates", uniqueConstraints = {@UniqueConstraint(name = "routine_templates_name_key",
+        columnNames = {"name"})})
+public class RoutineTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

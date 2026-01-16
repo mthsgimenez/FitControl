@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.entity.workout;
+package com.mthsgimenez.fitcontrol.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

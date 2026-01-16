@@ -1,7 +1,5 @@
-package com.mthsgimenez.fitcontrol.entity.workout;
+package com.mthsgimenez.fitcontrol.model;
 
-import com.mthsgimenez.fitcontrol.entity.member.Member;
-import com.mthsgimenez.fitcontrol.entity.routine.RoutineDay;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

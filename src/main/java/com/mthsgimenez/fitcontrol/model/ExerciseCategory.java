@@ -1,15 +1,18 @@
-package com.mthsgimenez.fitcontrol.entity.exercise;
+package com.mthsgimenez.fitcontrol.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
-@Table(name = "exercises", uniqueConstraints = {@UniqueConstraint(name = "exercises_name_key",
+@Table(name = "exercise_categories", uniqueConstraints = {@UniqueConstraint(name = "exercise_categories_name_key",
         columnNames = {"name"})})
-public class Exercise {
+public class ExerciseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -18,9 +21,8 @@ public class Exercise {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private ExerciseCategory category;
+    @OneToMany(mappedBy = "category")
+    private Set<Exercise> exercises = new LinkedHashSet<>();
 
 
 }
