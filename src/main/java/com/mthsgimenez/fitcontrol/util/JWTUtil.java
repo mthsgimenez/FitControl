@@ -44,8 +44,7 @@ public class JWTUtil {
                 .sign(this.algorithm);
     }
 
-    // TODO: Utilizar uma exception mais semântica
-    public User verifyTokenAndGetUser(String token) throws JWTVerificationException, JWTDecodeException {
+    public User verifyTokenAndGetUser(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(this.algorithm)
                 .withIssuer(this.issuer)
                 .build();
