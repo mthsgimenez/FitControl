@@ -1,10 +1,13 @@
 package com.mthsgimenez.fitcontrol.controller;
 
 import com.mthsgimenez.fitcontrol.dto.EmailDTO;
+import com.mthsgimenez.fitcontrol.dto.ErrorDTO;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
+import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.service.AuthService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,8 +40,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerTenant(@Valid @RequestBody TenantRegisterDTO data) {
-        authService.registerTenant(data);
+    public ResponseEntity<?> registerTenant(@Valid @RequestBody TenantRegisterDTO data) {
+        try {
+            authService.registerTenant(data);
+        } catch (DataIntegrityViolationException e) {
+            ErrorDTO response = new ErrorDTO("Could not register tenant. Check the provided information");
+            return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+        } catch (EmailNotVerifiedException e) {
+            ErrorDTO response = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

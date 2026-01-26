@@ -4,6 +4,7 @@ import com.mthsgimenez.fitcontrol.dto.EmailDTO;
 import com.mthsgimenez.fitcontrol.dto.EmailVerificationDTO;
 import com.mthsgimenez.fitcontrol.event.TenantCreatedEvent;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
+import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.model.Tenant;
 import com.mthsgimenez.fitcontrol.model.User;
 import com.mthsgimenez.fitcontrol.repository.TenantRepository;
@@ -89,9 +90,9 @@ public class AuthService {
     }
 
     @Transactional
-    public void registerTenant(TenantRegisterDTO data) {
+    public void registerTenant(TenantRegisterDTO data) throws EmailNotVerifiedException {
         if (!isEmailVerified(data)) {
-            throw new RuntimeException("Invalid email or code");
+            throw new EmailNotVerifiedException("Could not verify email");
         }
 
         String schemaName = "schema_" + UUID.randomUUID().toString().replace("-", "").toLowerCase();
