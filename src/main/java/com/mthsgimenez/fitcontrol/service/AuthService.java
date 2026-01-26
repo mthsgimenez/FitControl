@@ -47,7 +47,7 @@ public class AuthService {
 
     public void sendVerificationCode(String email) throws MessagingException {
         String otp = otpUtil.generateAndStoreOTP(email);
-        emailService.SendOTPEmail(email, otp);
+        emailService.sendOTPEmail(email, otp);
     }
 
     public String verifyEmail(String email, String code) {
