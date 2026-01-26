@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.service;
 
+import com.mthsgimenez.fitcontrol.event.TenantCreatedEvent;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.model.Tenant;
 import com.mthsgimenez.fitcontrol.model.User;
@@ -9,8 +10,11 @@ import com.mthsgimenez.fitcontrol.util.JWTUtil;
 import com.mthsgimenez.fitcontrol.util.OTPUtil;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -21,7 +25,7 @@ public class AuthService {
     private final OTPUtil otpUtil;
     private final JWTUtil jwtUtil;
     private final EmailService emailService;
-    private final SchemaService schemaService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public AuthService(
             UserRepository userRepository,
@@ -30,7 +34,7 @@ public class AuthService {
             OTPUtil otpUtil,
             JWTUtil jwtUtil,
             EmailService emailService,
-            SchemaService schemaService
+            ApplicationEventPublisher applicationEventPublisher
     ) {
         this.userRepository = userRepository;
         this.tenantRepository = tenantRepository;
@@ -38,7 +42,7 @@ public class AuthService {
         this.otpUtil = otpUtil;
         this.jwtUtil = jwtUtil;
         this.emailService = emailService;
-        this.schemaService = schemaService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void sendVerificationCode(String email) throws MessagingException {
@@ -62,7 +66,7 @@ public class AuthService {
             throw new RuntimeException("Invalid email");
         }
 
-        String schemaName = schemaService.createSchema();
+        String schemaName = "schema_" + UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
         Tenant newTenant =  new Tenant();
         newTenant.setCnpj(data.cnpj());
@@ -70,7 +74,6 @@ public class AuthService {
         newTenant.setTradeName(data.tradeName());
         newTenant.setPostalCode(data.postalCode());
         newTenant.setSchemaName(schemaName);
-
         tenantRepository.save(newTenant);
 
         User newUser = new User();
@@ -79,5 +82,9 @@ public class AuthService {
         String passwordHash = passwordEncoder.encode(data.password());
         newUser.setPasswordHash(passwordHash);
         userRepository.save(newUser);
+
+        applicationEventPublisher.publishEvent(
+                new TenantCreatedEvent(schemaName)
+        );
     }
 }

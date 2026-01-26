@@ -29,6 +29,8 @@ app:
     secret: ${JWT_SECRET}
     expiration_ms: ${JWT_EXPIRATION_MS:3600000}
     issuer: ${JWT_ISSUER:api}
+  migration:
+    tenant-location: ${MIGRATION_TENANT_LOCATION:classpath:db/migration/tenant}
 
 ---
 spring:
