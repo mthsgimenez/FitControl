@@ -23,8 +23,6 @@ spring:
         from: ${SMTP_FROM}
     default-encoding: utf-8
 app:
-  hmac:
-    secret: ${HMAC_SECRET}
   jwt:
     secret: ${JWT_SECRET}
     expiration_ms: ${JWT_EXPIRATION_MS:3600000}
