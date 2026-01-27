@@ -22,6 +22,8 @@ spring:
             enable: true
         from: ${SMTP_FROM}
     default-encoding: utf-8
+  messages:
+    basename: messages/messages
 app:
   jwt:
     secret: ${JWT_SECRET}
