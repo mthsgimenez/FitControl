@@ -1,14 +1,16 @@
 package com.mthsgimenez.fitcontrol.controller;
 
 import com.mthsgimenez.fitcontrol.dto.EmailDTO;
-import com.mthsgimenez.fitcontrol.dto.ErrorDTO;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.service.AuthService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +26,11 @@ import java.util.UUID;
 public class AuthController {
 
     private final AuthService authService;
+    private final MessageSource messageSource;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, MessageSource messageSource) {
         this.authService = authService;
+        this.messageSource = messageSource;
     }
 
     @PostMapping("/verify-email")
@@ -44,11 +48,15 @@ public class AuthController {
         try {
             authService.registerTenant(data);
         } catch (DataIntegrityViolationException e) {
-            ErrorDTO response = new ErrorDTO("Could not register tenant. Check the provided information");
-            return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+            problem.setTitle(messageSource.getMessage("problem.tenant-registration-failed.title", null, LocaleContextHolder.getLocale()));
+            problem.setDetail(messageSource.getMessage("problem.tenant-registration-failed.detail", null, LocaleContextHolder.getLocale()));
+            return new ResponseEntity<ProblemDetail>(problem, HttpStatus.BAD_REQUEST);
         } catch (EmailNotVerifiedException e) {
-            ErrorDTO response = new ErrorDTO(e.getMessage());
-            return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+            problem.setTitle(messageSource.getMessage("problem.email-verification-failed.title", null, LocaleContextHolder.getLocale()));
+            problem.setDetail(e.getMessage());
+            return new ResponseEntity<ProblemDetail>(problem, HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

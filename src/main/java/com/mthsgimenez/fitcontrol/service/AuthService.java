@@ -13,6 +13,8 @@ import com.mthsgimenez.fitcontrol.util.OTPUtil;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class AuthService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final MessageSource messageSource;
 
     public AuthService(
             UserRepository userRepository,
@@ -41,7 +44,7 @@ public class AuthService {
             EmailService emailService,
             ApplicationEventPublisher applicationEventPublisher,
             RedisTemplate<String, Object> redisTemplate,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper, MessageSource messageSource
     ) {
         this.userRepository = userRepository;
         this.tenantRepository = tenantRepository;
@@ -51,6 +54,7 @@ public class AuthService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
+        this.messageSource = messageSource;
     }
 
     public UUID sendVerificationCode(EmailDTO email) throws MessagingException {
@@ -92,7 +96,9 @@ public class AuthService {
     @Transactional
     public void registerTenant(TenantRegisterDTO data) throws EmailNotVerifiedException {
         if (!isEmailVerified(data)) {
-            throw new EmailNotVerifiedException("Could not verify email");
+            throw new EmailNotVerifiedException(
+                    messageSource.getMessage("exception.email-not-verified-exception", null, LocaleContextHolder.getLocale())
+            );
         }
 
         String schemaName = "schema_" + UUID.randomUUID().toString().replace("-", "").toLowerCase();
