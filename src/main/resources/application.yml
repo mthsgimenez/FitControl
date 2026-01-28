@@ -61,6 +61,11 @@ spring:
   config:
     activate:
       on-profile: prod
+  web:
+    error:
+      include-stacktrace: never
+      include-message: never
+      include-binding-errors: never
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}

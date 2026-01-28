@@ -1,6 +1,7 @@
 package com.mthsgimenez.fitcontrol.controller;
 
 import com.mthsgimenez.fitcontrol.dto.EmailDTO;
+import com.mthsgimenez.fitcontrol.dto.LoginDTO;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.service.AuthService;
@@ -59,5 +60,12 @@ public class AuthController {
             return new ResponseEntity<ProblemDetail>(problem, HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginDTO data) {
+        String token = authService.login(data);
+
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 }

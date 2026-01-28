@@ -2,6 +2,7 @@ package com.mthsgimenez.fitcontrol.service;
 
 import com.mthsgimenez.fitcontrol.dto.EmailDTO;
 import com.mthsgimenez.fitcontrol.dto.EmailVerificationDTO;
+import com.mthsgimenez.fitcontrol.dto.LoginDTO;
 import com.mthsgimenez.fitcontrol.event.TenantCreatedEvent;
 import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
@@ -10,6 +11,7 @@ import com.mthsgimenez.fitcontrol.model.User;
 import com.mthsgimenez.fitcontrol.repository.RoleRepository;
 import com.mthsgimenez.fitcontrol.repository.TenantRepository;
 import com.mthsgimenez.fitcontrol.repository.UserRepository;
+import com.mthsgimenez.fitcontrol.util.JWTUtil;
 import com.mthsgimenez.fitcontrol.util.OTPUtil;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -17,6 +19,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -38,6 +43,8 @@ public class AuthService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private final MessageSource messageSource;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jWTUtil;
 
     public AuthService(
             UserRepository userRepository, RoleRepository roleRepository,
@@ -47,8 +54,8 @@ public class AuthService {
             EmailService emailService,
             ApplicationEventPublisher applicationEventPublisher,
             RedisTemplate<String, Object> redisTemplate,
-            ObjectMapper objectMapper, MessageSource messageSource
-    ) {
+            ObjectMapper objectMapper, MessageSource messageSource, AuthenticationManager authenticationManager,
+            JWTUtil jWTUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tenantRepository = tenantRepository;
@@ -59,6 +66,8 @@ public class AuthService {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.messageSource = messageSource;
+        this.authenticationManager = authenticationManager;
+        this.jWTUtil = jWTUtil;
     }
 
     public UUID sendVerificationCode(EmailDTO email) throws MessagingException {
@@ -129,5 +138,12 @@ public class AuthService {
         applicationEventPublisher.publishEvent(
                 new TenantCreatedEvent(schemaName)
         );
+    }
+
+    public String login(LoginDTO data) {
+        var usernamePasswordToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+        var auth = authenticationManager.authenticate(usernamePasswordToken);
+
+        return jWTUtil.generateToken((User) auth.getPrincipal());
     }
 }

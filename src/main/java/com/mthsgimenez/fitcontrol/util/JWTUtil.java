@@ -9,9 +9,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mthsgimenez.fitcontrol.model.User;
 import com.mthsgimenez.fitcontrol.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -34,9 +36,13 @@ public class JWTUtil {
     public String generateToken(User user) {
         Instant issueDate = Instant.now();
 
+        List<String> roles = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).toList();
+
         return JWT.create()
                 .withIssuer(this.issuer)
                 .withSubject(user.getUuid().toString())
+                .withClaim("roles", roles)
                 .withClaim("email", user.getEmail())
                 .withIssuedAt(issueDate)
                 .withNotBefore(issueDate)
