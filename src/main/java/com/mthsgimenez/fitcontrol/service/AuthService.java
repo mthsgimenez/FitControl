@@ -7,6 +7,7 @@ import com.mthsgimenez.fitcontrol.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.model.Tenant;
 import com.mthsgimenez.fitcontrol.model.User;
+import com.mthsgimenez.fitcontrol.repository.RoleRepository;
 import com.mthsgimenez.fitcontrol.repository.TenantRepository;
 import com.mthsgimenez.fitcontrol.repository.UserRepository;
 import com.mthsgimenez.fitcontrol.util.OTPUtil;
@@ -21,12 +22,14 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final TenantRepository tenantRepository;
     private final PasswordEncoder passwordEncoder;
     private final OTPUtil otpUtil;
@@ -37,7 +40,7 @@ public class AuthService {
     private final MessageSource messageSource;
 
     public AuthService(
-            UserRepository userRepository,
+            UserRepository userRepository, RoleRepository roleRepository,
             TenantRepository tenantRepository,
             PasswordEncoder passwordEncoder,
             OTPUtil otpUtil,
@@ -47,6 +50,7 @@ public class AuthService {
             ObjectMapper objectMapper, MessageSource messageSource
     ) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.tenantRepository = tenantRepository;
         this.passwordEncoder = passwordEncoder;
         this.otpUtil = otpUtil;
@@ -116,6 +120,7 @@ public class AuthService {
         newUser.setTenant(newTenant);
         String passwordHash = passwordEncoder.encode(data.password());
         newUser.setPasswordHash(passwordHash);
+        newUser.setRoles(Set.of(roleRepository.findByName("ROLE_OWNER")));
         userRepository.save(newUser);
 
         String redisKey = "email_verification:" + data.verificationId().toString();
