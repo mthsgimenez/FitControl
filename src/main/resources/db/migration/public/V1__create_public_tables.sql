@@ -16,7 +16,7 @@ CREATE TABLE public.roles (
 
 CREATE TABLE public.users (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    uuid UUID DEFAULT gen_random_uuid() UNIQUE,
+    uuid UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     email varchar(70) NOT NULL,
     password_hash varchar(60) NOT NULL,
     tenant_id integer NOT NULL REFERENCES tenants(id),

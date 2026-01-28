@@ -23,7 +23,7 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "uuid", columnDefinition = "uuid", updatable = false, nullable = false, unique = true)
+    @Column(name = "uuid", columnDefinition = "uuid", insertable = false, updatable = false, nullable = false, unique = true)
     private UUID uuid;
 
     @Column(name = "email", nullable = false, length = 70)
