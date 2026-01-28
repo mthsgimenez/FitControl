@@ -23,6 +23,13 @@ CREATE TABLE public.users (
     UNIQUE (email)
 );
 
+CREATE TABLE public.user_roles(
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id integer NOT NULL REFERENCES users(id),
+    role_id integer NOT NULL REFERENCES roles(id),
+    UNIQUE (user_id, role_id)
+);
+
 CREATE UNIQUE INDEX idx_users_uuid on users(uuid);
 
 CREATE TYPE duration_unit AS ENUM ('DURATION_DAY', 'DURATION_WEEK', 'DURATION_MONTH', 'DURATION_YEAR');
