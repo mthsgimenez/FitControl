@@ -2,6 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE public.tenants (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    uuid UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     cnpj varchar(14) NOT NULL UNIQUE,
     postal_code varchar(8) NOT NULL,
     trade_name varchar(100) NULL UNIQUE,

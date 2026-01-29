@@ -15,6 +15,7 @@ import com.mthsgimenez.fitcontrol.util.JWTUtil;
 import com.mthsgimenez.fitcontrol.util.OTPUtil;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -29,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -84,6 +86,8 @@ public class AuthService {
 
         emailService.sendOTPEmail(email.email(), code);
 
+        log.info("Email verification has been sent to {}", email.email());
+
         return verificationId;
     }
 
@@ -112,15 +116,19 @@ public class AuthService {
             );
         }
 
-        String schemaName = "schema_" + UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        UUID tenantUUID = UUID.randomUUID();
+        String schemaName = "tenant_" + tenantUUID.toString().split("-")[0];
 
         Tenant newTenant =  new Tenant();
+        newTenant.setUuid(tenantUUID);
         newTenant.setCnpj(data.cnpj());
         newTenant.setLegalName(data.legalName());
         newTenant.setTradeName(data.tradeName());
         newTenant.setPostalCode(data.postalCode());
         newTenant.setSchemaName(schemaName);
         tenantRepository.save(newTenant);
+
+        log.info("New tenant registered: {}\nSchema: {}", newTenant.getCnpj(), newTenant.getSchemaName());
 
         User newUser = new User();
         newUser.setEmail(data.email());

@@ -1,11 +1,13 @@
 package com.mthsgimenez.fitcontrol.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class SchemaService {
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,5 +38,6 @@ public class SchemaService {
     public void createSchemaAndMigrate(String schemaName) {
         createSchema(schemaName);
         runMigrations(schemaName);
+        log.info("Schema created: {}", schemaName);
     }
 }

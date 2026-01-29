@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -21,6 +23,9 @@ public class Tenant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "uuid", columnDefinition = "uuid", insertable = true, updatable = false, nullable = false, unique = true)
+    private UUID uuid;
 
     @Column(name = "cnpj", nullable = false, length = 14)
     private String cnpj;

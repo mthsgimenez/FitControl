@@ -39,11 +39,14 @@ public class JWTUtil {
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
 
+        UUID tenantUUID = user.getTenant().getUuid();
+
         return JWT.create()
                 .withIssuer(this.issuer)
                 .withSubject(user.getUuid().toString())
                 .withClaim("roles", roles)
                 .withClaim("email", user.getEmail())
+                .withClaim("tenant", tenantUUID.toString())
                 .withIssuedAt(issueDate)
                 .withNotBefore(issueDate)
                 .withExpiresAt(issueDate.plusMillis(this.expirationMillis))
