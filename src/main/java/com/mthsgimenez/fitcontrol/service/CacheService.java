@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.service;
 
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +43,17 @@ public class CacheService {
 
     public void delete(String key) {
         redisTemplateObject.delete(key);
+    }
+
+    public Long increment(String key) {
+        return redisTemplateObject.opsForValue().increment(key);
+    }
+
+    public void expire(String key, Duration duration) {
+        redisTemplateObject.expire(key, duration);
+    }
+
+    public Long getTTL(String key) {
+        return redisTemplateObject.getExpire(key);
     }
 }

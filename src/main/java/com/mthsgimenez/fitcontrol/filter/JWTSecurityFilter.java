@@ -1,7 +1,6 @@
-package com.mthsgimenez.fitcontrol.config;
+package com.mthsgimenez.fitcontrol.filter;
 
 import com.mthsgimenez.fitcontrol.model.User;
-import com.mthsgimenez.fitcontrol.repository.UserRepository;
 import com.mthsgimenez.fitcontrol.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
