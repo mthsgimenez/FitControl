@@ -1,40 +1,28 @@
 package com.mthsgimenez.fitcontrol.util;
 
-import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Base64;
 
+@Component
 public class OTPUtil {
-    private final static SecureRandom rnd = new SecureRandom();
+    private final SecureRandom rnd = new SecureRandom();
 
-    private final static ConcurrentHashMap<String, OTP> OTPStorage = new ConcurrentHashMap<String, OTP>();
-
-    public static OTP generateOTP() {
-        StringBuilder result = new StringBuilder();
+    public String generateOtp() {
+        StringBuilder otp = new StringBuilder();
 
         for (int i = 0; i < 6; i++) {
-            result.append(rnd.nextInt(10));
+            otp.append(rnd.nextInt(10));
         }
 
-        return new OTP(result.toString());
-    }
-
-    public static void saveOTP(String key, OTP code) {
-        OTPStorage.put(key, code);
-    }
-
-    public static boolean verifyOTP(String key, String code) {
-        OTP otp = OTPStorage.get(key);
-        if (otp == null) return false;
-
-        Instant now = Instant.now();
-        return code.equals(otp.getCode())
-                && now.isBefore(otp.getExpirationDate())
-                && now.isAfter(otp.getIssueDate());
+        return otp.toString();
     }
 }
