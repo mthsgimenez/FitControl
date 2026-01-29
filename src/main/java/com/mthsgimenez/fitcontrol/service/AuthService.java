@@ -18,10 +18,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -40,7 +38,7 @@ public class AuthService {
     private final OTPUtil otpUtil;
     private final EmailService emailService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final CacheService cacheService;
     private final ObjectMapper objectMapper;
     private final MessageSource messageSource;
     private final AuthenticationManager authenticationManager;
@@ -53,7 +51,7 @@ public class AuthService {
             OTPUtil otpUtil,
             EmailService emailService,
             ApplicationEventPublisher applicationEventPublisher,
-            RedisTemplate<String, Object> redisTemplate,
+            CacheService cacheService,
             ObjectMapper objectMapper, MessageSource messageSource, AuthenticationManager authenticationManager,
             JWTUtil jWTUtil) {
         this.userRepository = userRepository;
@@ -63,7 +61,7 @@ public class AuthService {
         this.otpUtil = otpUtil;
         this.emailService = emailService;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.redisTemplate = redisTemplate;
+        this.cacheService = cacheService;
         this.objectMapper = objectMapper;
         this.messageSource = messageSource;
         this.authenticationManager = authenticationManager;
@@ -81,8 +79,8 @@ public class AuthService {
                 hashedCode
         );
 
-        String redisKey = "email_verification:" + verificationId.toString();
-        redisTemplate.opsForValue().set(redisKey, data, Duration.ofMinutes(5));
+        String cacheKey = "email_verification:" + verificationId.toString();
+        cacheService.set(cacheKey, data, Duration.ofMinutes(5));
 
         emailService.sendOTPEmail(email.email(), code);
 
@@ -90,8 +88,8 @@ public class AuthService {
     }
 
     public boolean isEmailVerified(TenantRegisterDTO data) {
-        String redisKey = "email_verification:" + data.verificationId().toString();
-        Object obj = redisTemplate.opsForValue().get(redisKey);
+        String cacheKey = "email_verification:" + data.verificationId().toString();
+        Object obj = cacheService.getObject(cacheKey);
 
         if (obj == null) {
             return false;
@@ -132,8 +130,8 @@ public class AuthService {
         newUser.setRoles(Set.of(roleRepository.findByName("ROLE_OWNER")));
         userRepository.save(newUser);
 
-        String redisKey = "email_verification:" + data.verificationId().toString();
-        redisTemplate.delete(redisKey);
+        String cacheKey = "email_verification:" + data.verificationId().toString();
+        cacheService.delete(cacheKey);
 
         applicationEventPublisher.publishEvent(
                 new TenantCreatedEvent(schemaName)
