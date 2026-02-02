@@ -29,21 +29,27 @@ CREATE TABLE routine_template_day_exercises (
     UNIQUE (exercise_order, routine_template_day_id)
 );
 
-CREATE TABLE members (
+CREATE TABLE people (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name varchar(50) NOT NULL,
+    last_name varchar(100) NOT NULL,
+    cpf varchar(11) NOT NULL UNIQUE,
     birth_date date NOT NULL,
     user_id integer NOT NULL REFERENCES public.users(id),
     UNIQUE (user_id)
 );
 
+CREATE TABLE members (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    person_id integer NOT NULL REFERENCES people(id),
+    UNIQUE (person_id)
+);
+
 CREATE TABLE employees (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name varchar(50) NOT NULL,
-    birth_date date NOT NULL,
-    cpf varchar(11) NOT NULL UNIQUE,
-    user_id integer NOT NULL REFERENCES public.users(id),
-    UNIQUE (user_id)
+    admission_date date NOT NULL,
+    person_id integer NOT NULL REFERENCES people(id),
+    UNIQUE (person_id)
 );
 
 CREATE TABLE membership_plans (
