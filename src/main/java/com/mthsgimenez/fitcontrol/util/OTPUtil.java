@@ -1,16 +1,8 @@
 package com.mthsgimenez.fitcontrol.util;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.time.Duration;
-import java.util.Base64;
 
 @Component
 public class OTPUtil {
