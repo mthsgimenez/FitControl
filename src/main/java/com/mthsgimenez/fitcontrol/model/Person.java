@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.model;
 
+import com.mthsgimenez.fitcontrol.auth.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
