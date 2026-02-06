@@ -5,6 +5,7 @@ import com.mthsgimenez.fitcontrol.auth.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.auth.dto.UserRegisterDTO;
 import com.mthsgimenez.fitcontrol.auth.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.auth.repository.RoleRepository;
+import com.mthsgimenez.fitcontrol.infra.cache.CacheService;
 import com.mthsgimenez.fitcontrol.tenant.dto.TenantDTO;
 import com.mthsgimenez.fitcontrol.tenant.model.Tenant;
 import com.mthsgimenez.fitcontrol.tenant.service.TenantService;
@@ -22,17 +23,20 @@ public class RegisterTenantService {
     private final TenantService tenantService;
     private final EmailVerificationService emailVerificationService;
     private final RoleRepository roleRepository;
+    private final CacheService cacheService;
 
     public RegisterTenantService(
             UserRegisterService userRegisterService,
             TenantService tenantService,
             EmailVerificationService emailVerificationService,
-            RoleRepository roleRepository
+            RoleRepository roleRepository,
+            CacheService cacheService
     ) {
         this.userRegisterService = userRegisterService;
         this.tenantService = tenantService;
         this.emailVerificationService = emailVerificationService;
         this.roleRepository = roleRepository;
+        this.cacheService = cacheService;
     }
 
     @Transactional
@@ -65,5 +69,7 @@ public class RegisterTenantService {
         );
 
         userRegisterService.registerNewUser(userData);
+
+        cacheService.delete("email_verification:" + data.verificationId().toString());
     }
 }

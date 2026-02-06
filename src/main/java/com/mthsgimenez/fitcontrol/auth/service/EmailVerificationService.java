@@ -92,7 +92,5 @@ public class EmailVerificationService {
                     messageSource.getMessage("exception.email-not-verified-exception.invalid-code", null, LocaleContextHolder.getLocale())
             );
         }
-
-        cacheService.delete(cacheKey);
     }
 }
