@@ -50,7 +50,7 @@ public class EmailVerificationService {
 
         EmailVerificationDTO data = new EmailVerificationDTO(
                 verificationId,
-                to.toString(),
+                to.email(),
                 hashedCode
         );
 
@@ -58,7 +58,7 @@ public class EmailVerificationService {
         cacheService.set(cacheKey, data, Duration.ofMinutes(5));
 
         EmailMessage emailMessage = new EmailMessage(
-                to.toString(),
+                to.email(),
                 messageSource.getMessage("email.verification-code.subject", null, LocaleContextHolder.getLocale()),
                 messageSource.getMessage("email.verification-code.text", new Object[]{code}, LocaleContextHolder.getLocale())
         );
