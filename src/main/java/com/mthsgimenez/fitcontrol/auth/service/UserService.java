@@ -1,26 +1,33 @@
 package com.mthsgimenez.fitcontrol.auth.service;
 
-import com.mthsgimenez.fitcontrol.auth.dto.UserRegisterDTO;
+import com.mthsgimenez.fitcontrol.auth.dto.CreateUserDTO;
 import com.mthsgimenez.fitcontrol.auth.model.User;
+import com.mthsgimenez.fitcontrol.auth.repository.RoleRepository;
 import com.mthsgimenez.fitcontrol.auth.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Collectors;
+
 @Service
-public class UserRegisterService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final String rolePrefix = "ROLE_";
 
-    public UserRegisterService(
+    public UserService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            RoleRepository roleRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
-    public User registerNewUser(UserRegisterDTO data) {
+    public User createUser(CreateUserDTO data) {
         User newUser = new User();
 
         newUser.setEmail(data.email());
@@ -29,7 +36,11 @@ public class UserRegisterService {
         newUser.setTenant(data.tenant());
 
         if (data.roles() != null && !data.roles().isEmpty()) {
-            newUser.setRoles(data.roles());
+            var roles = data.roles().stream().map(
+                    roleName -> roleRepository.findByName(rolePrefix + roleName)
+                            .orElseThrow(() -> new IllegalStateException(rolePrefix + roleName + " not found in database"))
+            ).collect(Collectors.toSet());
+            newUser.setRoles(roles);
         }
 
         return userRepository.save(newUser);
