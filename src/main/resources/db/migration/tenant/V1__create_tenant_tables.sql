@@ -122,10 +122,3 @@ CREATE TABLE performed_sets (
     notes text NULL,
     UNIQUE (set_order, performed_exercise_id)
 );
-
-CREATE TABLE user_roles (
-    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    role_id integer NOT NULL REFERENCES public.roles(id),
-    user_id integer NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-    UNIQUE (role_id, user_id)
-);
