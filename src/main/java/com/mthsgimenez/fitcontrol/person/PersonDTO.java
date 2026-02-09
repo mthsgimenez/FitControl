@@ -14,5 +14,5 @@ public record PersonDTO(
         @NotBlank @Length(min = 2, max = 100) String lastName,
         @NotBlank @CPF String cpf,
         @NotNull @Past LocalDate birthDate,
-        @NotNull User user
+        @NotNull Integer userId
 ){}
