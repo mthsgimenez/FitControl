@@ -1,8 +1,8 @@
 package com.mthsgimenez.fitcontrol.auth.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public record EmailDTO(
-        @NotEmpty @Email String email
+        @NotBlank @Email String email
 ){}

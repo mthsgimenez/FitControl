@@ -1,6 +1,8 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.person;
 
 import com.mthsgimenez.fitcontrol.auth.model.User;
+import com.mthsgimenez.fitcontrol.model.Employee;
+import com.mthsgimenez.fitcontrol.model.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
