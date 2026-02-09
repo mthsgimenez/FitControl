@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
@@ -27,11 +26,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
             "/auth/register", new RateLimitConfig(15L, Duration.ofMinutes(5))
     );
     private final CacheService cacheService;
-    private final MessageSource messageSource;
 
-    public RateLimitFilter(CacheService cacheService, MessageSource messageSource) {
+    public RateLimitFilter(CacheService cacheService) {
         this.cacheService = cacheService;
-        this.messageSource = messageSource;
     }
 
     @Override
@@ -55,8 +52,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             Long ttl = cacheService.getTTL(cacheKey);
 
-            problem.setTitle(messageSource.getMessage("problem.too-many-requests.title", null, request.getLocale()));
-            problem.setDetail(messageSource.getMessage("problem.too-many-requests.detail", new Object[]{ttl}, request.getLocale()));
+            problem.setTitle(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
+            problem.setDetail("Too many requests sent, retry after: " + ttl + " seconds");
             problem.setInstance(URI.create(request.getRequestURI()));
             problem.setProperty("RetryAfterSeconds", ttl);
 
