@@ -1,9 +1,9 @@
 package com.mthsgimenez.fitcontrol.tenant.service;
 
-import com.mthsgimenez.fitcontrol.tenant.model.Tenant;
-import com.mthsgimenez.fitcontrol.tenant.event.TenantCreatedEvent;
-import com.mthsgimenez.fitcontrol.tenant.repository.TenantRepository;
 import com.mthsgimenez.fitcontrol.tenant.dto.TenantDTO;
+import com.mthsgimenez.fitcontrol.tenant.event.TenantCreatedEvent;
+import com.mthsgimenez.fitcontrol.tenant.model.Tenant;
+import com.mthsgimenez.fitcontrol.tenant.repository.TenantRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

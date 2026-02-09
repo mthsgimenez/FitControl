@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 

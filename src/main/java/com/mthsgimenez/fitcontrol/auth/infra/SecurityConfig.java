@@ -2,6 +2,8 @@ package com.mthsgimenez.fitcontrol.auth.infra;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +23,17 @@ public class SecurityConfig {
 
     public SecurityConfig(JWTSecurityFilter jwtSecurityFilter) {
         this.jwtSecurityFilter = jwtSecurityFilter;
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.fromHierarchy(
+                """
+                        ROLE_OWNER > ROLE_MANAGER
+                        ROLE_OWNER > ROLE_FINANCE
+                        ROLE_OWNER > ROLE_INSTRUCTOR
+                """
+        );
     }
 
     @Bean

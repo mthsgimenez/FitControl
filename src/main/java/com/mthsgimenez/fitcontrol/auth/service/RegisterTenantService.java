@@ -1,8 +1,8 @@
 package com.mthsgimenez.fitcontrol.auth.service;
 
+import com.mthsgimenez.fitcontrol.auth.dto.CreateUserDTO;
 import com.mthsgimenez.fitcontrol.auth.dto.EmailVerificationDTO;
 import com.mthsgimenez.fitcontrol.auth.dto.TenantRegisterDTO;
-import com.mthsgimenez.fitcontrol.auth.dto.CreateUserDTO;
 import com.mthsgimenez.fitcontrol.auth.enums.RoleType;
 import com.mthsgimenez.fitcontrol.auth.exception.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.infra.cache.CacheService;
