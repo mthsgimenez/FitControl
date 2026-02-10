@@ -1,6 +1,6 @@
 package com.mthsgimenez.fitcontrol.model;
 
-import com.mthsgimenez.fitcontrol.person.Person;
+import com.mthsgimenez.fitcontrol.person.model.Person;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

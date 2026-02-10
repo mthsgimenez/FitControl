@@ -1,8 +1,11 @@
-package com.mthsgimenez.fitcontrol.person;
+package com.mthsgimenez.fitcontrol.person.service;
 
 import com.mthsgimenez.fitcontrol.auth.model.User;
 import com.mthsgimenez.fitcontrol.auth.repository.UserRepository;
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdException;
+import com.mthsgimenez.fitcontrol.person.dto.PersonRequestDTO;
+import com.mthsgimenez.fitcontrol.person.model.Person;
+import com.mthsgimenez.fitcontrol.person.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +20,7 @@ public class PersonService {
         this.userRepository = userRepository;
     }
 
-    public Person createPerson(PersonDTO data) {
+    public Person createPerson(PersonRequestDTO data) {
         // TODO: usuário tem que ser do mesmo tenant que o usuário que fez a request
         User user = userRepository.findById(data.userId())
                 .orElseThrow(() -> new NotFoundWithIdException(User.class, data.userId()));

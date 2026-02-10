@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.person;
+package com.mthsgimenez.fitcontrol.person.model;
 
 import com.mthsgimenez.fitcontrol.auth.model.User;
 import com.mthsgimenez.fitcontrol.model.Employee;
