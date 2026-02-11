@@ -1,8 +1,8 @@
 package com.mthsgimenez.fitcontrol.infra.multitenancy;
 
-import com.mthsgimenez.fitcontrol.auth.model.User;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,8 +17,9 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
             return defaultSchema;
         }
 
-        if (auth.getPrincipal() instanceof User user) {
-            return user.getTenant().getSchemaName();
+        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+            String schema = jwtAuth.getToken().getClaim("schema");
+            return schema != null ? schema : defaultSchema;
         }
 
         return defaultSchema;
