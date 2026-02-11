@@ -1,11 +1,11 @@
 package com.mthsgimenez.fitcontrol.auth.controller;
 
-import com.mthsgimenez.fitcontrol.auth.dto.EmailDTO;
-import com.mthsgimenez.fitcontrol.auth.dto.LoginDTO;
-import com.mthsgimenez.fitcontrol.auth.dto.TenantRegisterDTO;
+import com.mthsgimenez.fitcontrol.auth.dto.*;
 import com.mthsgimenez.fitcontrol.auth.exception.EmailNotVerifiedException;
+import com.mthsgimenez.fitcontrol.auth.exception.InvalidTokenException;
 import com.mthsgimenez.fitcontrol.auth.service.EmailVerificationService;
 import com.mthsgimenez.fitcontrol.auth.service.LoginService;
+import com.mthsgimenez.fitcontrol.auth.service.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.auth.service.RegisterTenantService;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
@@ -31,17 +31,20 @@ public class AuthController {
     private final LoginService loginService;
     private final RegisterTenantService registerTenantService;
     private final MessageSource messageSource;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthController(
             EmailVerificationService emailVerificationService,
             LoginService loginService,
             RegisterTenantService registerTenantService,
-            MessageSource messageSource
+            MessageSource messageSource,
+            RefreshTokenService refreshTokenService
     ) {
         this.emailVerificationService = emailVerificationService;
         this.loginService = loginService;
         this.registerTenantService = registerTenantService;
         this.messageSource = messageSource;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/verify-email")
@@ -69,9 +72,24 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginDTO data) {
-        String token = loginService.login(data);
+    public ResponseEntity<TokenDTO> login(@Valid @RequestBody LoginDTO data) {
+        TokenDTO token = loginService.login(data);
 
-        return ResponseEntity.ok(Collections.singletonMap("token", token));
+        return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO data) {
+        String refreshToken = data.refreshToken();
+        try {
+            TokenDTO refreshedTokens = refreshTokenService.refreshTokens(refreshToken);
+            return ResponseEntity.ok(refreshedTokens);
+        } catch (InvalidTokenException e) {
+            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+            problem.setTitle(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            problem.setDetail(e.getMessage());
+
+            return new ResponseEntity<>(problem, HttpStatus.UNAUTHORIZED);
+        }
     }
 }
