@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.br.CNPJ;
 import java.util.UUID;
 
 public record TenantRegisterDTO(
-        @NotNull UUID verificationId,
         @NotBlank @Email String email,
         @NotBlank @Length(min = 6, max = 6) String verificationCode,
         @NotBlank @CNPJ String cnpj,

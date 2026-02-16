@@ -1,12 +1,13 @@
 package com.mthsgimenez.fitcontrol.auth.controller;
 
 import com.mthsgimenez.fitcontrol.auth.dto.*;
-import com.mthsgimenez.fitcontrol.auth.exception.EmailNotVerifiedException;
+import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.auth.exception.InvalidTokenException;
-import com.mthsgimenez.fitcontrol.auth.service.EmailVerificationService;
+import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationService;
 import com.mthsgimenez.fitcontrol.auth.service.LoginService;
 import com.mthsgimenez.fitcontrol.auth.service.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.auth.service.RegisterTenantService;
+import com.mthsgimenez.fitcontrol.auth.dto.EmailDTO;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -48,9 +49,9 @@ public class AuthController {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<Map<String, String>> sendEmailVerificationCode(@Valid @RequestBody EmailDTO email) {
-            UUID verificationId = emailVerificationService.sendVerificationEmail(email);
-            return ResponseEntity.ok(Collections.singletonMap("verificationId", verificationId.toString()));
+    public ResponseEntity<Void> sendEmailVerificationCode(@Valid @RequestBody EmailDTO email) {
+            emailVerificationService.sendVerificationEmail(email.email());
+            return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
@@ -64,7 +65,7 @@ public class AuthController {
             return new ResponseEntity<ProblemDetail>(problem, HttpStatus.BAD_REQUEST);
         } catch (EmailNotVerifiedException e) {
             ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-            problem.setTitle(messageSource.getMessage("problem.email-verification-failed.title", null, LocaleContextHolder.getLocale()));
+            problem.setTitle(HttpStatus.BAD_REQUEST.getReasonPhrase());
             problem.setDetail(e.getMessage());
             return new ResponseEntity<ProblemDetail>(problem, HttpStatus.BAD_REQUEST);
         }

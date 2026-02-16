@@ -1,11 +1,11 @@
 package com.mthsgimenez.fitcontrol.auth.service;
 
 import com.mthsgimenez.fitcontrol.auth.dto.CreateUserDTO;
-import com.mthsgimenez.fitcontrol.auth.dto.EmailVerificationDTO;
 import com.mthsgimenez.fitcontrol.auth.dto.TenantRegisterDTO;
 import com.mthsgimenez.fitcontrol.auth.enums.RoleType;
-import com.mthsgimenez.fitcontrol.auth.exception.EmailNotVerifiedException;
-import com.mthsgimenez.fitcontrol.infra.cache.CacheService;
+import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
+import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationService;
+import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationStore;
 import com.mthsgimenez.fitcontrol.tenant.dto.TenantDTO;
 import com.mthsgimenez.fitcontrol.tenant.model.Tenant;
 import com.mthsgimenez.fitcontrol.tenant.service.TenantService;
@@ -22,29 +22,21 @@ public class RegisterTenantService {
     private final UserService userService;
     private final TenantService tenantService;
     private final EmailVerificationService emailVerificationService;
-    private final CacheService cacheService;
 
     public RegisterTenantService(
             UserService userService,
             TenantService tenantService,
             EmailVerificationService emailVerificationService,
-            CacheService cacheService
+            EmailVerificationStore emailVerificationStore
     ) {
         this.userService = userService;
         this.tenantService = tenantService;
         this.emailVerificationService = emailVerificationService;
-        this.cacheService = cacheService;
     }
 
     @Transactional
     public void registerNewTenant(TenantRegisterDTO data) throws EmailNotVerifiedException {
-        EmailVerificationDTO emailVerificationData = new EmailVerificationDTO(
-                data.verificationId(),
-                data.email(),
-                data.verificationCode()
-        );
-
-        emailVerificationService.verifyEmail(emailVerificationData);
+        emailVerificationService.verifyEmail(data.email(), data.verificationCode());
 
         TenantDTO tenantData = new TenantDTO(
                 data.cnpj(),
@@ -64,6 +56,6 @@ public class RegisterTenantService {
         );
 
         userService.createUser(userData);
-        cacheService.delete("email_verification:" + data.verificationId().toString());
+        emailVerificationService.deleteVerificationForEmail(data.email());
     }
 }
