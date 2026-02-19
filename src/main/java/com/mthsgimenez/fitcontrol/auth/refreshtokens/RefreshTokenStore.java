@@ -29,7 +29,7 @@ public class RefreshTokenStore {
         String tokenKey = tokenKeyPrefix + hashedRefreshToken;
         String userTokensKey = userTokensKeyTemplate.formatted(userId);
 
-        redisTemplate.opsForValue().set(tokenKey, hashedRefreshToken, expirationMinutes);
+        redisTemplate.opsForValue().set(tokenKey, userId.toString(), expirationMinutes);
         redisTemplate.opsForSet().add(userTokensKey, hashedRefreshToken);
     }
 

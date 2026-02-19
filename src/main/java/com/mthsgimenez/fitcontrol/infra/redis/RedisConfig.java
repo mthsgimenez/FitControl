@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.infra.cache;
+package com.mthsgimenez.fitcontrol.infra.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

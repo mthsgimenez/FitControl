@@ -1,7 +1,6 @@
-package com.mthsgimenez.fitcontrol.userpassword;
+package com.mthsgimenez.fitcontrol.passwordtoken;
 
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.RandomTokenUtil;
-import com.mthsgimenez.fitcontrol.infra.cache.CacheService;
 import com.mthsgimenez.fitcontrol.infra.email.EmailMessage;
 import com.mthsgimenez.fitcontrol.infra.email.EmailService;
 import com.mthsgimenez.fitcontrol.user.User;
@@ -9,39 +8,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.time.Duration;
-
 // TODO: remover dependencia de randomTokenUtil do package auth
-// TODO: criar store ao invés de utilizar cacheService
-public class PasswordRecoveryService {
+public class PasswordTokenService {
 
     private final EmailService emailService;
     private final RandomTokenUtil randomTokenUtil;
-    private final CacheService cacheService;
     private final MessageSource messageSource;
     private final String frontendUrl;
-    private final String cacheKeyPrefix = "password_recovery:";
+    private final PasswordTokenStore passwordTokenStore;
 
-    public PasswordRecoveryService(
+    public PasswordTokenService(
             @Value("${app.infra.frontend-url}") String frontendUrl,
             EmailService emailService,
             RandomTokenUtil randomTokenUtil,
-            CacheService cacheService,
-            MessageSource messageSource
-            ) {
+            MessageSource messageSource,
+            PasswordTokenStore passwordTokenStore
+    ) {
         this.emailService = emailService;
         this.randomTokenUtil = randomTokenUtil;
-        this.cacheService = cacheService;
         this.frontendUrl = frontendUrl;
         this.messageSource = messageSource;
+        this.passwordTokenStore = passwordTokenStore;
     }
 
     public void sendRecoveryPasswordEmail(User user) {
         String recoveryToken = randomTokenUtil.getRandomToken();
         String recoveryUrl = String.format("%s/recover-password?token=%s", frontendUrl, recoveryToken);
-        String cacheKey = cacheKeyPrefix + randomTokenUtil.hashToken(recoveryToken);
+        String hashedToken = randomTokenUtil.hashToken(recoveryToken);
 
-        cacheService.set(cacheKey, user.getId(), Duration.ofMinutes(60));
+        passwordTokenStore.storePasswordToken(hashedToken, user.getId());
 
         EmailMessage message = new EmailMessage(
                 user.getEmail(),
