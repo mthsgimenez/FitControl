@@ -24,13 +24,8 @@ public class EmailVerificationStore {
 
     public Optional<String> get(String email) {
         String redisKey = keyPrefix + email;
-
         String code = redisTemplate.opsForValue().get(redisKey);
-        if (code == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(code);
+        return Optional.ofNullable(code);
     }
 
     public void delete(String email) {
