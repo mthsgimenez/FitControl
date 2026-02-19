@@ -1,6 +1,5 @@
 package com.mthsgimenez.fitcontrol.infra.ratelimit;
 
-import com.mthsgimenez.fitcontrol.infra.cache.CacheService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +24,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
             "/auth/verify-email", new RateLimitConfig(2L, Duration.ofMinutes(1)),
             "/auth/register", new RateLimitConfig(15L, Duration.ofMinutes(5))
     );
-    private final CacheService cacheService;
+    private final RateLimitStore rateLimitStore;
 
-    public RateLimitFilter(CacheService cacheService) {
-        this.cacheService = cacheService;
+    public RateLimitFilter(
+            RateLimitStore rateLimitStore
+    ) {
+        this.rateLimitStore = rateLimitStore;
     }
 
     @Override
@@ -40,17 +41,17 @@ public class RateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getServletPath();
         RateLimitConfig rateLimitConfig = config.get(path);
-        String cacheKey = "rl:" + getClientIp(request);
+        String ip = getClientIp(request);
 
-        Long count = cacheService.increment(cacheKey);
+        Long count = rateLimitStore.increaseRequestCount(ip);
         if (count == 1) {
-            cacheService.expire(cacheKey, rateLimitConfig.window());
+            rateLimitStore.setWindow(ip, rateLimitConfig.window());
         }
 
         if (count > rateLimitConfig.limit()) {
             ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS.value());
 
-            Long ttl = cacheService.getTTL(cacheKey);
+            Long ttl = rateLimitStore.getTTL(ip);
 
             problem.setTitle(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
             problem.setDetail("Too many requests sent, retry after: " + ttl + " seconds");
