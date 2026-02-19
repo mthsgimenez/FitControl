@@ -5,8 +5,6 @@ import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-
 @Service
 public class RefreshTokenService {
 

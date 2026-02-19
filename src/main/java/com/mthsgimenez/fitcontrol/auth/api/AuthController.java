@@ -1,12 +1,12 @@
 package com.mthsgimenez.fitcontrol.auth.api;
 
 import com.mthsgimenez.fitcontrol.auth.login.LoginDTO;
+import com.mthsgimenez.fitcontrol.auth.login.LoginService;
+import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
+import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.TokenDTO;
 import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
-import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
 import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationService;
-import com.mthsgimenez.fitcontrol.auth.login.LoginService;
-import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.tenant.TenantRegisterRequestDTO;
 import com.mthsgimenez.fitcontrol.tenant.TenantRegistrationService;
 import jakarta.validation.Valid;

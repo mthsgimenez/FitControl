@@ -1,8 +1,8 @@
 package com.mthsgimenez.fitcontrol.person;
 
+import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdException;
 import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
-import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdException;
 import org.springframework.stereotype.Service;
 
 @Service

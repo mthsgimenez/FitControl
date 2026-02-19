@@ -1,8 +1,8 @@
 package com.mthsgimenez.fitcontrol.auth.login;
 
+import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.TokenDTO;
 import com.mthsgimenez.fitcontrol.user.User;
-import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;

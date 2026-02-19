@@ -1,11 +1,11 @@
 package com.mthsgimenez.fitcontrol.tenant;
 
-import com.mthsgimenez.fitcontrol.user.CreateUserDTO;
-import com.mthsgimenez.fitcontrol.user.RoleType;
-import com.mthsgimenez.fitcontrol.user.UserService;
 import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationService;
 import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationStore;
+import com.mthsgimenez.fitcontrol.user.CreateUserDTO;
+import com.mthsgimenez.fitcontrol.user.RoleType;
+import com.mthsgimenez.fitcontrol.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
