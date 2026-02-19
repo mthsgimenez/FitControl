@@ -1,6 +1,5 @@
 package com.mthsgimenez.fitcontrol.emailverification;
 
-import com.mthsgimenez.fitcontrol.auth.service.OTPUtil;
 import com.mthsgimenez.fitcontrol.infra.email.EmailMessage;
 import com.mthsgimenez.fitcontrol.infra.email.EmailService;
 import lombok.extern.slf4j.Slf4j;
