@@ -2,7 +2,6 @@ package com.mthsgimenez.fitcontrol.tenant;
 
 import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
 import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationService;
-import com.mthsgimenez.fitcontrol.emailverification.EmailVerificationStore;
 import com.mthsgimenez.fitcontrol.user.CreateUserDTO;
 import com.mthsgimenez.fitcontrol.user.RoleType;
 import com.mthsgimenez.fitcontrol.user.UserService;
@@ -23,8 +22,7 @@ public class TenantRegistrationService {
     public TenantRegistrationService(
             UserService userService,
             TenantService tenantService,
-            EmailVerificationService emailVerificationService,
-            EmailVerificationStore emailVerificationStore
+            EmailVerificationService emailVerificationService
     ) {
         this.userService = userService;
         this.tenantService = tenantService;
