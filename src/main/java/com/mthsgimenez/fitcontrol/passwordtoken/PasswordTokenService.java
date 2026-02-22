@@ -1,24 +1,25 @@
 package com.mthsgimenez.fitcontrol.passwordtoken;
 
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
-import com.mthsgimenez.fitcontrol.auth.refreshtokens.RandomTokenUtil;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.infra.email.EmailMessage;
 import com.mthsgimenez.fitcontrol.infra.email.EmailService;
 import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
+import com.mthsgimenez.fitcontrol.util.DeterministicHashUtil;
+import com.mthsgimenez.fitcontrol.util.RandomStringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-// TODO: remover dependencia de randomTokenUtil do package auth
 @Service
 public class PasswordTokenService {
 
     private final EmailService emailService;
-    private final RandomTokenUtil randomTokenUtil;
+    private final RandomStringUtil randomStringUtil;
+    private final DeterministicHashUtil deterministicHashUtil;
     private final MessageSource messageSource;
     private final String frontendUrl;
     private final PasswordTokenStore passwordTokenStore;
@@ -29,7 +30,8 @@ public class PasswordTokenService {
     public PasswordTokenService(
             @Value("${app.infra.frontend-url}") String frontendUrl,
             EmailService emailService,
-            RandomTokenUtil randomTokenUtil,
+            RandomStringUtil randomStringUtil,
+            DeterministicHashUtil deterministicHashUtil,
             MessageSource messageSource,
             PasswordTokenStore passwordTokenStore,
             UserRepository userRepository,
@@ -37,8 +39,9 @@ public class PasswordTokenService {
             RefreshTokenService refreshTokenService
     ) {
         this.emailService = emailService;
-        this.randomTokenUtil = randomTokenUtil;
+        this.randomStringUtil = randomStringUtil;
         this.frontendUrl = frontendUrl;
+        this.deterministicHashUtil = deterministicHashUtil;
         this.messageSource = messageSource;
         this.passwordTokenStore = passwordTokenStore;
         this.userRepository = userRepository;
@@ -47,9 +50,9 @@ public class PasswordTokenService {
     }
 
     public void sendPasswordTokenEmail(User user, EmailType emailType) {
-        String recoveryToken = randomTokenUtil.getRandomToken();
+        String recoveryToken = randomStringUtil.getRandomString();
         String recoveryUrl = String.format("%s/recover-password?token=%s", frontendUrl, recoveryToken);
-        String hashedToken = randomTokenUtil.hashToken(recoveryToken);
+        String hashedToken = deterministicHashUtil.hashString(recoveryToken);
 
         passwordTokenStore.storePasswordToken(hashedToken, user.getId());
 

@@ -3,6 +3,8 @@ package com.mthsgimenez.fitcontrol.auth.refreshtokens;
 import com.mthsgimenez.fitcontrol.auth.login.JWTService;
 import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
+import com.mthsgimenez.fitcontrol.util.DeterministicHashUtil;
+import com.mthsgimenez.fitcontrol.util.RandomStringUtil;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,34 +12,37 @@ public class RefreshTokenService {
 
     private final UserRepository userRepository;
     private final JWTService jwtService;
-    private final RandomTokenUtil randomTokenUtil;
+    private final RandomStringUtil randomStringUtil;
+    private final DeterministicHashUtil deterministicHashUtil;
     private final RefreshTokenStore refreshTokenStore;
 
     public RefreshTokenService(
             UserRepository userRepository,
             JWTService jwtService,
-            RandomTokenUtil randomTokenUtil,
+            RandomStringUtil randomStringUtil,
+            DeterministicHashUtil deterministicHashUtil,
             RefreshTokenStore refreshTokenStore
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.randomTokenUtil = randomTokenUtil;
+        this.randomStringUtil = randomStringUtil;
+        this.deterministicHashUtil = deterministicHashUtil;
         this.refreshTokenStore = refreshTokenStore;
     }
 
     private void hashAndStoreToken(String refreshToken, Integer userId) {
-        String hashedToken = randomTokenUtil.hashToken(refreshToken);
+        String hashedToken = deterministicHashUtil.hashString(refreshToken);
         refreshTokenStore.storeRefreshToken(hashedToken, userId);
     }
 
     public String generateAndStoreRefreshToken(User user) {
-        String token = randomTokenUtil.getRandomToken();
+        String token = randomStringUtil.getRandomString();
         hashAndStoreToken(token, user.getId());
         return token;
     }
 
     public TokenDTO refreshTokens(String refreshToken) {
-        String hashedToken = randomTokenUtil.hashToken(refreshToken);
+        String hashedToken = deterministicHashUtil.hashString(refreshToken);
         Integer userId = refreshTokenStore.getRefreshTokenUserId(hashedToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired refresh token"));
 
