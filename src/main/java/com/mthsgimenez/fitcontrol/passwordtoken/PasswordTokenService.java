@@ -2,6 +2,7 @@ package com.mthsgimenez.fitcontrol.passwordtoken;
 
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.RandomTokenUtil;
+import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.infra.email.EmailMessage;
 import com.mthsgimenez.fitcontrol.infra.email.EmailService;
 import com.mthsgimenez.fitcontrol.user.User;
@@ -23,6 +24,7 @@ public class PasswordTokenService {
     private final PasswordTokenStore passwordTokenStore;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     public PasswordTokenService(
             @Value("${app.infra.frontend-url}") String frontendUrl,
@@ -31,7 +33,8 @@ public class PasswordTokenService {
             MessageSource messageSource,
             PasswordTokenStore passwordTokenStore,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            RefreshTokenService refreshTokenService
     ) {
         this.emailService = emailService;
         this.randomTokenUtil = randomTokenUtil;
@@ -40,9 +43,10 @@ public class PasswordTokenService {
         this.passwordTokenStore = passwordTokenStore;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenService = refreshTokenService;
     }
 
-    public void sendRecoveryPasswordEmail(User user, EmailType emailType) {
+    public void sendPasswordTokenEmail(User user, EmailType emailType) {
         String recoveryToken = randomTokenUtil.getRandomToken();
         String recoveryUrl = String.format("%s/recover-password?token=%s", frontendUrl, recoveryToken);
         String hashedToken = randomTokenUtil.hashToken(recoveryToken);
@@ -84,5 +88,6 @@ public class PasswordTokenService {
         userRepository.save(user);
 
         passwordTokenStore.deletePasswordToken(hashedToken);
+        refreshTokenService.revokeRefreshTokensFromUser(user.getId());
     }
 }
