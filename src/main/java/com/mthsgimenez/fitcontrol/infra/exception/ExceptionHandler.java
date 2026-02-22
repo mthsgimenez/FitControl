@@ -53,8 +53,8 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundWithIdException.class)
-    public ResponseEntity<Object> handleNotFoundWithIdException(NotFoundWithIdException ex) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundWithIdentifierException.class)
+    public ResponseEntity<Object> handleNotFoundWithIdentifierException(NotFoundWithIdentifierException ex) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problem.setTitle(HttpStatus.NOT_FOUND.getReasonPhrase());
         problem.setDetail(ex.getMessage());
