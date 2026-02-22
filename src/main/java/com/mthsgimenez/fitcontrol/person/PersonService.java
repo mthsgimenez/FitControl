@@ -40,4 +40,9 @@ public class PersonService {
         return personRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), id));
     }
+
+    public Person findPersonByCPF(String cpf) {
+        return personRepository.findByCpf(cpf)
+                .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), cpf));
+    }
 }

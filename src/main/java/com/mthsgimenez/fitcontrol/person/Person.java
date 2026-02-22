@@ -1,6 +1,6 @@
 package com.mthsgimenez.fitcontrol.person;
 
-import com.mthsgimenez.fitcontrol.model.Employee;
+import com.mthsgimenez.fitcontrol.employee.Employee;
 import com.mthsgimenez.fitcontrol.model.Member;
 import com.mthsgimenez.fitcontrol.user.User;
 import jakarta.persistence.*;
