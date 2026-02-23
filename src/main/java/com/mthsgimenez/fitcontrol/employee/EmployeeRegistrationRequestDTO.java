@@ -12,14 +12,14 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.Set;
 
-public record EmployeeRegistrationRequest(
+public record EmployeeRegistrationRequestDTO(
         Integer personId,
         @Valid PersonRequestDTO person,
         @NotBlank @Email String email,
         @NotNull LocalDate admissionDate,
         @NotNull Set<RoleType> roles
         ) {
-    public EmployeeRegistrationRequest {
+    public EmployeeRegistrationRequestDTO {
         if ((personId == null && person == null) || (personId != null && person != null)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

@@ -21,18 +21,21 @@ public class EmployeeController {
 
     private final EmployeeRegistrationService employeeRegistrationService;
     private final UserRepository userRepository;
+    private final EmployeeMapper employeeMapper;
 
     public EmployeeController(
             EmployeeRegistrationService employeeRegistrationService,
-            UserRepository userRepository
+            UserRepository userRepository,
+            EmployeeMapper employeeMapper
     ) {
         this.employeeRegistrationService = employeeRegistrationService;
         this.userRepository = userRepository;
+        this.employeeMapper = employeeMapper;
     }
 
     @PostMapping
-    public ResponseEntity<Employee> registerEmployee(
-            @Valid @RequestBody EmployeeRegistrationRequest data,
+    public ResponseEntity<EmployeeResponseDTO> registerEmployee(
+            @Valid @RequestBody EmployeeRegistrationRequestDTO data,
             Authentication auth
     ) {
         if (!(auth instanceof JwtAuthenticationToken jwtAuth)) {
@@ -41,11 +44,12 @@ public class EmployeeController {
 
         String userUUIDString = jwtAuth.getToken().getSubject();
         UUID userUUID = UUID.fromString(userUUIDString);
-
         User authUser = userRepository.findByUuid(userUUID)
                 .orElseThrow(() -> new RuntimeException("Something went wrong"));
 
         Employee newEmployee = employeeRegistrationService.registerNewEmployee(data, authUser);
-        return ResponseEntity.ok(newEmployee);
+        EmployeeResponseDTO responseDTO = employeeMapper.toResponseDTO(newEmployee);
+
+        return ResponseEntity.ok(responseDTO);
     }
 }

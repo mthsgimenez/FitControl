@@ -1,5 +1,7 @@
 package com.mthsgimenez.fitcontrol.person;
 
+import com.mthsgimenez.fitcontrol.user.UserResponseDTO;
+
 import java.time.LocalDate;
 
 public record PersonResponseDTO(
@@ -8,7 +10,7 @@ public record PersonResponseDTO(
         String lastName,
         String cpf,
         LocalDate birthDate,
-        String userId
+        UserResponseDTO user
 ) {
     public PersonResponseDTO {
         cpf = cpf.replaceAll("\\D", "");

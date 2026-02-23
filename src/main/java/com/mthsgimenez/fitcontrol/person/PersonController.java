@@ -14,9 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonController {
 
     private final PersonService personService;
+    private final PersonMapper personMapper;
 
-    public PersonController(PersonService personService) {
+    public PersonController(PersonService personService,
+                            PersonMapper personMapper
+    ) {
         this.personService = personService;
+        this.personMapper = personMapper;
     }
 
     @GetMapping()
@@ -24,14 +28,7 @@ public class PersonController {
     public ResponseEntity<PersonResponseDTO> searchByCPF(@Valid @CPF @RequestParam String cpf) {
         Person person = personService.findPersonByCPF(cpf);
 
-        PersonResponseDTO responseDTO = new PersonResponseDTO(
-                person.getId(),
-                person.getName(),
-                person.getLastName(),
-                person.getCpf(),
-                person.getBirthDate(),
-                person.getUser().getUuid().toString()
-        );
+        PersonResponseDTO responseDTO = personMapper.toResponseDTO(person);
 
         return ResponseEntity.ok(responseDTO);
     }

@@ -39,7 +39,7 @@ public class EmployeeRegistrationService {
     }
 
     @Transactional
-    public Employee registerNewEmployee(EmployeeRegistrationRequest data, User authUser) {
+    public Employee registerNewEmployee(EmployeeRegistrationRequestDTO data, User authUser) {
         if (data.person() == null) {
             return createEmployeeFromExistingPerson(data.personId(), data.admissionDate());
         }
@@ -58,7 +58,7 @@ public class EmployeeRegistrationService {
         return employeeService.createEmployee(newEmployeeData);
     }
 
-    private User createUserForEmployee(EmployeeRegistrationRequest data, User authUser) {
+    private User createUserForEmployee(EmployeeRegistrationRequestDTO data, User authUser) {
         Set<RoleType> validRoles = EnumSet.of(RoleType.FINANCE, RoleType.MANAGER, RoleType.INSTRUCTOR);
         Set<RoleType> filteredRoles = EnumSet.copyOf(data.roles());
         filteredRoles.retainAll(validRoles);
