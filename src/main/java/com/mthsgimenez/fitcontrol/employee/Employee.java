@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.employee;
 
 import com.mthsgimenez.fitcontrol.person.Person;
 import jakarta.persistence.*;
