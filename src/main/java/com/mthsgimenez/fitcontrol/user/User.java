@@ -4,6 +4,8 @@ import com.mthsgimenez.fitcontrol.tenant.Tenant;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +29,7 @@ public class User implements UserDetails {
     private Integer id;
 
     @Column(name = "uuid", columnDefinition = "uuid", insertable = false, updatable = false, nullable = false, unique = true)
+    @Generated(event = EventType.INSERT)
     private UUID uuid;
 
     @Column(name = "email", nullable = false, length = 70)
