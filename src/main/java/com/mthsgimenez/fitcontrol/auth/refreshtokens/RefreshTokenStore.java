@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class RefreshTokenStore {
         String tokenKey = tokenKeyPrefix + hashedRefreshToken;
         String userTokensKey = userTokensKeyTemplate.formatted(userId);
 
-        redisTemplate.opsForValue().set(tokenKey, userId.toString(), expirationMinutes);
+        redisTemplate.opsForValue().set(tokenKey, userId.toString(), Duration.ofMinutes(expirationMinutes));
         redisTemplate.opsForSet().add(userTokensKey, hashedRefreshToken);
     }
 
