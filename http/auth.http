@@ -1,7 +1,6 @@
 @email =
 @password =
 @cnpj =
-@postalCode =
 
 ###
 POST {{baseUrl}}/auth/verify-email
@@ -16,11 +15,11 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "verificationCode": "",
+  "verificationCode": "884362",
   "email": "{{email}}",
   "password": "{{password}}",
   "cnpj": "{{cnpj}}",
-  "postalCode": "{{postalCode}}",
+  "postalCode": "{{$random.integer(10000000,99999999)}}",
   "legalName": "{{$random.company.name}}",
   "tradeName": "{{$random.company.name}}"
 }

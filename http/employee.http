@@ -1,0 +1,28 @@
+###
+< {%
+    function randomPastDate(maxDaysAgo) {
+        const now = new Date();
+        const daysAgo = Math.floor(Math.random() * maxDaysAgo);
+        const date = new Date(now);
+        date.setDate(now.getDate() - daysAgo);
+        return date.toISOString().split('T')[0];
+    }
+
+    request.variables.set("admissionDate", randomPastDate(3650));
+    request.variables.set("birthDate", randomPastDate(3650));
+%}
+POST {{baseUrl}}/employee
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "email": "{{$random.internet.emailAddress}}",
+  "admissionDate": "{{admissionDate}}",
+  "person": {
+    "birthDate": "{{birthDate}}",
+    "cpf": "",
+    "lastName": "{{$random.name.lastName}}",
+    "name": "{{$random.name.firstName}}"
+  },
+  "roles": []
+}
