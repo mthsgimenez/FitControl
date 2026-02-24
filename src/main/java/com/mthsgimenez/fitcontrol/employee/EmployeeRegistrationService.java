@@ -66,7 +66,7 @@ public class EmployeeRegistrationService {
         CreateUserDTO newUserData = new CreateUserDTO(
                 data.email(),
                 randomStringUtil.getRandomString(),
-                validRoles,
+                filteredRoles,
                 authUser.getTenant()
         );
 
