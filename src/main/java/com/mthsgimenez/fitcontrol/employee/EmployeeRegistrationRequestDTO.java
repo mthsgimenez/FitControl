@@ -15,16 +15,23 @@ import java.util.Set;
 public record EmployeeRegistrationRequestDTO(
         Integer personId,
         @Valid PersonRequestDTO person,
-        @NotBlank @Email String email,
+        @Email String email,
         @NotNull LocalDate admissionDate,
         @NotNull Set<RoleType> roles
         ) {
     public EmployeeRegistrationRequestDTO {
-        if ((personId == null && person == null) || (personId != null && person != null)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Either personId or person must be provided"
-            );
+        if (personId == null) {
+            if (person == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "person or personId must be provided");
+            }
+
+            if (email == null || email.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email must be provided if no personId");
+            }
+        }
+
+        if (personId != null && person != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "only person or personId must be provided");
         }
     }
 }
