@@ -7,11 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,15 +20,18 @@ public class EmployeeController {
     private final EmployeeRegistrationService employeeRegistrationService;
     private final UserRepository userRepository;
     private final EmployeeMapper employeeMapper;
+    private final EmployeeService employeeService;
 
     public EmployeeController(
             EmployeeRegistrationService employeeRegistrationService,
             UserRepository userRepository,
-            EmployeeMapper employeeMapper
+            EmployeeMapper employeeMapper,
+            EmployeeService employeeService
     ) {
         this.employeeRegistrationService = employeeRegistrationService;
         this.userRepository = userRepository;
         this.employeeMapper = employeeMapper;
+        this.employeeService = employeeService;
     }
 
     @PostMapping
@@ -51,5 +52,29 @@ public class EmployeeController {
         EmployeeResponseDTO responseDTO = employeeMapper.toResponseDTO(newEmployee);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> editEmployeeRoles(@PathVariable Integer id, @RequestBody @Valid EmployeeRolesRequestDTO data) {
+        Employee updatedEmployee = employeeService.editEmployeeRoles(id, data.roles());
+        var response = employeeMapper.toResponseDTO(updatedEmployee);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> getEmployee(@PathVariable Integer id) {
+        Employee employee = employeeService.findById(id);
+        var response = employeeMapper.toResponseDTO(employee);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EmployeeResponseDTO>> getEmployees() {
+        List<Employee> employees = employeeService.findAll();
+        var responseList = employees.stream().map(employeeMapper::toResponseDTO).toList();
+
+        return ResponseEntity.ok(responseList);
     }
 }

@@ -59,9 +59,8 @@ public class EmployeeRegistrationService {
     }
 
     private User createUserForEmployee(EmployeeRegistrationRequestDTO data, User authUser) {
-        Set<RoleType> validRoles = EnumSet.of(RoleType.FINANCE, RoleType.MANAGER, RoleType.INSTRUCTOR);
         Set<RoleType> filteredRoles = EnumSet.copyOf(data.roles());
-        filteredRoles.retainAll(validRoles);
+        filteredRoles.retainAll(RoleType.EMPLOYEE_ROLES);
 
         CreateUserDTO newUserData = new CreateUserDTO(
                 data.email(),
