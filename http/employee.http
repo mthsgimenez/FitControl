@@ -26,3 +26,20 @@ Content-Type: application/json
   },
   "roles": []
 }
+
+###
+GET {{baseUrl}}/employee
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/employee/1
+Authorization: Bearer {{accessToken}}
+
+###
+PUT {{baseUrl}}/employee/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "roles": []
+}
