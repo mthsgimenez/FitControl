@@ -52,12 +52,12 @@ public class PasswordTokenService {
         this.refreshTokenService = refreshTokenService;
     }
 
-    public void sendPasswordTokenEmail(User user, EmailType emailType) {
+    public void sendPasswordTokenEmail(String email, EmailType emailType) {
         String recoveryToken = randomStringUtil.getRandomString();
         String recoveryUrl = String.format("%s/%s?token=%s", frontendUrl, frontendEndpoint, recoveryToken);
         String hashedToken = deterministicHashUtil.hashString(recoveryToken);
 
-        passwordTokenStore.storePasswordToken(hashedToken, user.getId());
+        passwordTokenStore.storePasswordToken(hashedToken, email);
 
         String subject;
         String text;
@@ -75,7 +75,7 @@ public class PasswordTokenService {
         }
 
         EmailMessage message = new EmailMessage(
-                user.getEmail(),
+                email,
                 subject,
                 text
         );
@@ -85,10 +85,10 @@ public class PasswordTokenService {
     public void setNewPassword(String token, String newPassword) {
         String hashedToken = deterministicHashUtil.hashString(token);
 
-        Integer userId = passwordTokenStore.getPasswordTokenUserId(hashedToken)
+        String email = passwordTokenStore.getPasswordTokenEmail(hashedToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired password token"));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired password token"));
 
         String passwordHash = passwordEncoder.encode(newPassword);
@@ -97,5 +97,10 @@ public class PasswordTokenService {
 
         passwordTokenStore.deletePasswordToken(hashedToken);
         refreshTokenService.revokeRefreshTokensFromUser(user.getId());
+    }
+
+    public void resendPasswordToken(String email) {
+        passwordTokenStore.revokePasswordTokens(email);
+        sendPasswordTokenEmail(email, EmailType.PASSWORD_RESET);
     }
 }

@@ -19,6 +19,6 @@ public class UserEventListener {
     @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onUserCreatedEvent(UserCreatedEvent event) {
-        passwordTokenService.sendPasswordTokenEmail(event.user(), EmailType.ONBOARDING);
+        passwordTokenService.sendPasswordTokenEmail(event.user().getEmail(), EmailType.ONBOARDING);
     }
 }

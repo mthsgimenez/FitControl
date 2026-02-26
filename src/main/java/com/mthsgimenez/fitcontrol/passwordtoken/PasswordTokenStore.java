@@ -6,37 +6,64 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
 public class PasswordTokenStore {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final String keyPrefix = "password_token:";
+
+    private final String tokenKeyPrefix = "password_token:";
+    private final String emailTokensKeyTemplate = "email:%s:password_tokens";
+
+    private final Duration expirationMinutes = Duration.ofMinutes(60);
 
     public PasswordTokenStore(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public Optional<Integer> getPasswordTokenUserId(String hashedToken) {
-        String key = keyPrefix + hashedToken;
-        String userId = redisTemplate.opsForValue().get(key);
+    public void storePasswordToken(String hashedToken, String email) {
+        String tokenKey = tokenKeyPrefix + hashedToken;
+        String emailTokensKey = emailTokensKeyTemplate.formatted(email);
 
-        try {
-            return Optional.ofNullable(userId).map(Integer::parseInt);
-        } catch (NumberFormatException e) {
-            log.error("Error parsing password token (userId may be corrupted): ", e);
-            return Optional.empty();
-        }
+        redisTemplate.opsForValue()
+                .set(tokenKey, email, expirationMinutes);
+
+        redisTemplate.opsForSet()
+                .add(emailTokensKey, hashedToken);
+
+        redisTemplate.expire(emailTokensKey, expirationMinutes);
     }
 
-    public void storePasswordToken(String hashedToken, Integer userId) {
-        String key = keyPrefix + hashedToken;
-        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofMinutes(60));
+    public Optional<String> getPasswordTokenEmail(String hashedToken) {
+        String tokenKey = tokenKeyPrefix + hashedToken;
+        return Optional.ofNullable(redisTemplate.opsForValue().get(tokenKey));
     }
 
     public void deletePasswordToken(String hashedToken) {
-        String key = keyPrefix + hashedToken;
-        redisTemplate.delete(key);
+        String tokenKey = tokenKeyPrefix + hashedToken;
+
+        String email = redisTemplate.opsForValue().get(tokenKey);
+        if (email != null) {
+            String emailTokensKey = emailTokensKeyTemplate.formatted(email);
+            redisTemplate.opsForSet().remove(emailTokensKey, hashedToken);
+        }
+
+        redisTemplate.delete(tokenKey);
+    }
+
+    public void revokePasswordTokens(String email) {
+        String emailTokensKey = emailTokensKeyTemplate.formatted(email);
+        Set<String> tokenHashes = redisTemplate.opsForSet().members(emailTokensKey);
+
+        if (tokenHashes != null && !tokenHashes.isEmpty()) {
+            for (String hash : tokenHashes) {
+                String tokenKey = tokenKeyPrefix + hash;
+                redisTemplate.delete(tokenKey);
+            }
+        }
+
+        redisTemplate.delete(emailTokensKey);
     }
 }
