@@ -41,5 +41,6 @@ app:
   migration:
     tenant-location: ${MIGRATION_TENANT_LOCATION:classpath:db/migration/tenant}
 
-  infra:
-    frontend-url: ${FRONTEND_URL:?Must set FRONTEND_URL env var}
+  frontend:
+    url: ${FRONTEND_URL:?Must set FRONTEND_URL env var}
+    set-password-endpoint: ${FRONTEND_PASSWORD_ENDPOINT:set-password}

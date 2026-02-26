@@ -22,13 +22,15 @@ public class PasswordTokenService {
     private final DeterministicHashUtil deterministicHashUtil;
     private final MessageSource messageSource;
     private final String frontendUrl;
+    private final String frontendEndpoint;
     private final PasswordTokenStore passwordTokenStore;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
 
     public PasswordTokenService(
-            @Value("${app.infra.frontend-url}") String frontendUrl,
+            @Value("${app.frontend.url}") String frontendUrl,
+            @Value("${app.frontend.set-password-endpoint}") String frontendEndpoint,
             EmailService emailService,
             RandomStringUtil randomStringUtil,
             DeterministicHashUtil deterministicHashUtil,
@@ -43,6 +45,7 @@ public class PasswordTokenService {
         this.frontendUrl = frontendUrl;
         this.deterministicHashUtil = deterministicHashUtil;
         this.messageSource = messageSource;
+        this.frontendEndpoint = frontendEndpoint;
         this.passwordTokenStore = passwordTokenStore;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -51,7 +54,7 @@ public class PasswordTokenService {
 
     public void sendPasswordTokenEmail(User user, EmailType emailType) {
         String recoveryToken = randomStringUtil.getRandomString();
-        String recoveryUrl = String.format("%s/recover-password?token=%s", frontendUrl, recoveryToken);
+        String recoveryUrl = String.format("%s/%s?token=%s", frontendUrl, frontendEndpoint, recoveryToken);
         String hashedToken = deterministicHashUtil.hashString(recoveryToken);
 
         passwordTokenStore.storePasswordToken(hashedToken, user.getId());
@@ -79,7 +82,9 @@ public class PasswordTokenService {
         emailService.sendTextEmail(message);
     }
 
-    public void setNewPassword(String hashedToken, String newPassword) {
+    public void setNewPassword(String token, String newPassword) {
+        String hashedToken = deterministicHashUtil.hashString(token);
+
         Integer userId = passwordTokenStore.getPasswordTokenUserId(hashedToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired password token"));
 
