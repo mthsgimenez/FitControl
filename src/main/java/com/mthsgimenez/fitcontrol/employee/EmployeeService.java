@@ -1,8 +1,9 @@
 package com.mthsgimenez.fitcontrol.employee;
 
+import com.mthsgimenez.fitcontrol.infra.exception.FKConstraintViolationException;
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierException;
-import com.mthsgimenez.fitcontrol.person.PersonService;
 import com.mthsgimenez.fitcontrol.user.*;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -60,5 +61,17 @@ public class EmployeeService {
 
     public List<Employee> findAll() {
         return employeeRepository.findAll();
+    }
+
+    public void deleteById(Integer employeeId) {
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new NotFoundWithIdentifierException(Employee.class.getSimpleName(), employeeId);
+        }
+
+        try {
+            employeeRepository.deleteById(employeeId);
+        } catch (DataIntegrityViolationException e) {
+            throw new FKConstraintViolationException(Employee.class.getSimpleName(), employeeId);
+        }
     }
 }

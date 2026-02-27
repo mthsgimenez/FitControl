@@ -83,4 +83,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(problem, HttpStatus.UNAUTHORIZED);
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(FKConstraintViolationException.class)
+    public ResponseEntity<Object> handleFKConstraintViolationException(FKConstraintViolationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle(HttpStatus.CONFLICT.getReasonPhrase());
+        problem.setDetail(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
+    }
 }

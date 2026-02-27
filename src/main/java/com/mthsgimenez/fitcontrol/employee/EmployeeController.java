@@ -77,4 +77,11 @@ public class EmployeeController {
 
         return ResponseEntity.ok(responseList);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable Integer id) {
+        employeeService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
