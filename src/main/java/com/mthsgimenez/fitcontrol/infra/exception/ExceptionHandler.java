@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.infra.exception;
 
+import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
@@ -72,5 +73,14 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         problem.setDetail(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problem.setTitle(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        problem.setDetail(ex.getMessage());
+
+        return new ResponseEntity<>(problem, HttpStatus.UNAUTHORIZED);
     }
 }

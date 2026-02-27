@@ -2,7 +2,6 @@ package com.mthsgimenez.fitcontrol.auth.api;
 
 import com.mthsgimenez.fitcontrol.auth.login.LoginDTO;
 import com.mthsgimenez.fitcontrol.auth.login.LoginService;
-import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.TokenDTO;
 import com.mthsgimenez.fitcontrol.emailverification.EmailNotVerifiedException;
@@ -79,15 +78,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO data) {
         String refreshToken = data.refreshToken();
-        try {
-            TokenDTO refreshedTokens = refreshTokenService.refreshTokens(refreshToken);
-            return ResponseEntity.ok(refreshedTokens);
-        } catch (InvalidTokenException e) {
-            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-            problem.setTitle(HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            problem.setDetail(e.getMessage());
-
-            return new ResponseEntity<>(problem, HttpStatus.UNAUTHORIZED);
-        }
+        TokenDTO refreshedTokens = refreshTokenService.refreshTokens(refreshToken);
+        return ResponseEntity.ok(refreshedTokens);
     }
 }
