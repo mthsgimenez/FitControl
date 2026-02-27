@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -15,9 +14,11 @@ public class PasswordTokenStore {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final String tokenKeyPrefix = "password_token:";
-    private final String emailTokensKeyTemplate = "email:%s:password_tokens";
+    private final String emailTokenKeyTemplate = "email:%s:password_token";
+    private final String cooldownKeyTemplate = "email:%s:password_token:cooldownDuration";
 
     private final Duration expirationMinutes = Duration.ofMinutes(60);
+    private final Duration cooldownDuration = Duration.ofSeconds(60);
 
     public PasswordTokenStore(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -25,45 +26,43 @@ public class PasswordTokenStore {
 
     public void storePasswordToken(String hashedToken, String email) {
         String tokenKey = tokenKeyPrefix + hashedToken;
-        String emailTokensKey = emailTokensKeyTemplate.formatted(email);
+        String emailTokenKey = emailTokenKeyTemplate.formatted(email);
+        String cooldownKey = cooldownKeyTemplate.formatted(email);
 
-        redisTemplate.opsForValue()
-                .set(tokenKey, email, expirationMinutes);
-
-        redisTemplate.opsForSet()
-                .add(emailTokensKey, hashedToken);
-
-        redisTemplate.expire(emailTokensKey, expirationMinutes);
+        redisTemplate.opsForValue().set(tokenKey, email, expirationMinutes);
+        redisTemplate.opsForValue().set(emailTokenKey, hashedToken, expirationMinutes);
+        redisTemplate.opsForValue().set(cooldownKey, "1", cooldownDuration);
     }
 
-    public Optional<String> getPasswordTokenEmail(String hashedToken) {
+    public Optional<String> getEmailFromToken(String hashedToken) {
         String tokenKey = tokenKeyPrefix + hashedToken;
         return Optional.ofNullable(redisTemplate.opsForValue().get(tokenKey));
     }
 
-    public void deletePasswordToken(String hashedToken) {
-        String tokenKey = tokenKeyPrefix + hashedToken;
-
-        String email = redisTemplate.opsForValue().get(tokenKey);
-        if (email != null) {
-            String emailTokensKey = emailTokensKeyTemplate.formatted(email);
-            redisTemplate.opsForSet().remove(emailTokensKey, hashedToken);
-        }
-
-        redisTemplate.delete(tokenKey);
+    public Boolean isEmailOnCooldown(String email) {
+        String cooldownKey = cooldownKeyTemplate.formatted(email);
+        String cooldown = redisTemplate.opsForValue().get(cooldownKey);
+        return cooldown != null;
     }
 
-    public void revokePasswordTokens(String email) {
-        String emailTokensKey = emailTokensKeyTemplate.formatted(email);
-        Set<String> tokenHashes = redisTemplate.opsForSet().members(emailTokensKey);
+    public Long getCooldownRemainingForEmail(String email) {
+        String cooldownKey = cooldownKeyTemplate.formatted(email);
 
-        if (tokenHashes != null && !tokenHashes.isEmpty()) {
-            for (String hash : tokenHashes) {
-                String tokenKey = tokenKeyPrefix + hash;
-                redisTemplate.delete(tokenKey);
-            }
+        return redisTemplate.getExpire(cooldownKey);
+    }
+
+    public void revokeTokenForEmail(String email) {
+        String emailTokenKey = emailTokenKeyTemplate.formatted(email);
+        String cooldownKey = cooldownKeyTemplate.formatted(email);
+
+        String hashedToken = redisTemplate.opsForValue().get(emailTokenKey);
+        if (hashedToken == null) {
+            return;
         }
 
-        redisTemplate.delete(emailTokensKey);
+        String tokenKey = tokenKeyPrefix + hashedToken;
+        redisTemplate.delete(tokenKey);
+        redisTemplate.delete(emailTokenKey);
+        redisTemplate.delete(cooldownKey);
     }
 }

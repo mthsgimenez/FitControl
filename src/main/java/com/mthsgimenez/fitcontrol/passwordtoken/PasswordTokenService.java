@@ -4,6 +4,7 @@ import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.infra.email.EmailMessage;
 import com.mthsgimenez.fitcontrol.infra.email.EmailService;
+import com.mthsgimenez.fitcontrol.infra.exception.TokenOnCooldownException;
 import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
 import com.mthsgimenez.fitcontrol.util.DeterministicHashUtil;
@@ -52,23 +53,37 @@ public class PasswordTokenService {
         this.refreshTokenService = refreshTokenService;
     }
 
-    public void sendPasswordTokenEmail(String email, EmailType emailType) {
-        String recoveryToken = randomStringUtil.getRandomString();
-        String recoveryUrl = String.format("%s/%s?token=%s", frontendUrl, frontendEndpoint, recoveryToken);
-        String hashedToken = deterministicHashUtil.hashString(recoveryToken);
+    private String createAndStoreToken(String email) {
+        Long cooldownRemaining = passwordTokenStore.getCooldownRemainingForEmail(email);
+
+        if (cooldownRemaining > 0) {
+            throw new TokenOnCooldownException("Email: " + email + " is on cooldown", cooldownRemaining);
+        }
+        passwordTokenStore.revokeTokenForEmail(email);
+
+        String token = randomStringUtil.getRandomString();
+        String hashedToken = deterministicHashUtil.hashString(token);
 
         passwordTokenStore.storePasswordToken(hashedToken, email);
+
+        return token;
+    }
+
+    public void sendPasswordTokenEmail(String email, EmailType emailType) {
+        String token = createAndStoreToken(email);
+
+        String setPasswordLink = String.format("%s/%s?token=%s", frontendUrl, frontendEndpoint, token);
 
         String subject;
         String text;
         switch (emailType) {
             case PASSWORD_RESET:
                 subject = messageSource.getMessage("email.password-recovery.subject", null, LocaleContextHolder.getLocale());
-                text = messageSource.getMessage("email.password-recovery.text", new Object[]{recoveryUrl}, LocaleContextHolder.getLocale());
+                text = messageSource.getMessage("email.password-recovery.text", new Object[]{setPasswordLink}, LocaleContextHolder.getLocale());
                 break;
             case ONBOARDING:
                 subject = messageSource.getMessage("email.onboarding.subject", null, LocaleContextHolder.getLocale());
-                text = messageSource.getMessage("email.onboarding.text", new Object[]{recoveryUrl}, LocaleContextHolder.getLocale());
+                text = messageSource.getMessage("email.onboarding.text", new Object[]{setPasswordLink}, LocaleContextHolder.getLocale());
                 break;
             default:
                 throw new IllegalArgumentException("Invalid email type");
@@ -85,7 +100,7 @@ public class PasswordTokenService {
     public void setNewPassword(String token, String newPassword) {
         String hashedToken = deterministicHashUtil.hashString(token);
 
-        String email = passwordTokenStore.getPasswordTokenEmail(hashedToken)
+        String email = passwordTokenStore.getEmailFromToken(hashedToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired password token"));
 
         User user = userRepository.findByEmail(email)
@@ -95,12 +110,7 @@ public class PasswordTokenService {
         user.setPasswordHash(passwordHash);
         userRepository.save(user);
 
-        passwordTokenStore.deletePasswordToken(hashedToken);
+        passwordTokenStore.revokeTokenForEmail(email);
         refreshTokenService.revokeRefreshTokensFromUser(user.getId());
-    }
-
-    public void resendPasswordToken(String email) {
-        passwordTokenStore.revokePasswordTokens(email);
-        sendPasswordTokenEmail(email, EmailType.PASSWORD_RESET);
     }
 }

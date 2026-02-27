@@ -1,6 +1,9 @@
 package com.mthsgimenez.fitcontrol.passwordtoken;
 
+import com.mthsgimenez.fitcontrol.infra.exception.TokenOnCooldownException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +28,16 @@ public class PasswordTokenController {
     }
 
     @PostMapping("/resend-token")
-    public ResponseEntity<Void> resendToken(@RequestBody @Valid ResendTokenRequestDTO data) {
-        passwordTokenService.resendPasswordToken(data.email());
+    public ResponseEntity<?> resendToken(@RequestBody @Valid ResendTokenRequestDTO data) {
+        try {
+            passwordTokenService.sendPasswordTokenEmail(data.email(), EmailType.PASSWORD_RESET);
+        } catch (TokenOnCooldownException e) {
+            ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
+            problem.setDetail("A token has already been sent to your email. You can send another in " + e.getCooldownRemaining() + " seconds");
+            problem.setProperty("retryAfter", e.getCooldownRemaining());
+
+            return new ResponseEntity<ProblemDetail>(problem, HttpStatus.TOO_MANY_REQUESTS);
+        }
         return ResponseEntity.ok().build();
     }
 }
