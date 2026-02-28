@@ -18,8 +18,12 @@ public class RoleService {
     }
 
     public RoleType entityToEnum(Role role) {
-        String name = role.getName().substring(5).toUpperCase();
-        return RoleType.valueOf(name);
+        String name = role.getNameUppercaseWithoutPrefix();
+        try {
+            return RoleType.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("RoleType not found for role: " + role.getName());
+        }
     }
 
 //    public Set<Role> enumToEntity(Set<RoleType> roles) {

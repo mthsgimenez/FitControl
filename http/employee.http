@@ -1,3 +1,5 @@
+@employeeId =
+
 ###
 < {%
     function randomPastDate(maxDaysAgo) {
@@ -32,14 +34,18 @@ GET {{baseUrl}}/employee
 Authorization: Bearer {{accessToken}}
 
 ###
-GET {{baseUrl}}/employee/1
+GET {{baseUrl}}/employee/{{employeeId}}
 Authorization: Bearer {{accessToken}}
 
 ###
-PUT {{baseUrl}}/employee/1
+PUT {{baseUrl}}/employee/{{employeeId}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
   "roles": []
 }
+
+###
+DELETE {{baseUrl}}/employee/{{employeeId}}
+Authorization: Bearer {{accessToken}}
