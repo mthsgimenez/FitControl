@@ -21,7 +21,7 @@ public interface UserMapper {
         }
         return roles.stream()
                 .map(role -> {
-                    String name = role.getName().substring(5).toUpperCase();
+                    String name = role.getNameUppercaseWithoutPrefix();
                     try {
                         return RoleType.valueOf(name);
                     } catch (IllegalArgumentException e) {
