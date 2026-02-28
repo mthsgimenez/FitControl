@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class EmployeeRegistrationService {
@@ -45,7 +44,7 @@ public class EmployeeRegistrationService {
         }
 
         User newUser = createUserForEmployee(data, authUser);
-        Person newPerson = createPersonForEmployee(data.person(), newUser.getUuid(), authUser);
+        Person newPerson = createPersonForEmployee(data.person(), newUser, authUser);
         return createEmployeeFromExistingPerson(newPerson.getId(), data.admissionDate());
     }
 
@@ -74,13 +73,13 @@ public class EmployeeRegistrationService {
         return newUser;
     }
 
-    private Person createPersonForEmployee(PersonRequestDTO data, UUID userUUID, User authUser) {
+    private Person createPersonForEmployee(PersonRequestDTO data, User user, User authUser) {
         PersonDTO newPersonData = new PersonDTO(
                 data.name(),
                 data.lastName(),
                 data.cpf(),
                 data.birthDate(),
-                userUUID
+                user
         );
 
         return personService.createPerson(newPersonData, authUser);

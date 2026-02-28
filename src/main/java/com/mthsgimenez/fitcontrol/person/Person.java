@@ -41,13 +41,7 @@ public class Person {
     private LocalDate birthDate;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @OneToOne(mappedBy = "person")
-    private Employee employee;
-
-    @OneToOne(mappedBy = "person")
-    private Member member;
 }

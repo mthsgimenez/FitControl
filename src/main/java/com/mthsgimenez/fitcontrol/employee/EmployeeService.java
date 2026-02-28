@@ -86,8 +86,6 @@ public class EmployeeService {
             return RoleType.EMPLOYEE_ROLES.contains(enumRole);
         });
 
-        person.setEmployee(null);
-
         try {
             employeeRepository.delete(employee);
         } catch (DataIntegrityViolationException e) {

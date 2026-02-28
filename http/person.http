@@ -1,0 +1,18 @@
+@personId =
+@cpf =
+
+###
+GET {{baseUrl}}/person
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/person/{{personId}}
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/person?cpf={{cpf}}
+Authorization: Bearer {{accessToken}}
+
+###
+DELETE {{baseUrl}}/person/{{personId}}
+Authorization: Bearer {{accessToken}}
