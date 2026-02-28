@@ -51,7 +51,6 @@ public class JWTService {
                 .withClaim("roles", roles)
                 .withClaim("email", user.getEmail())
                 .withClaim("tenant", tenant.getUuid().toString())
-                .withClaim("schema", tenant.getSchemaName())
                 .withIssuedAt(issueDate)
                 .withNotBefore(issueDate)
                 .withExpiresAt(issueDate.plusMillis(this.expirationMillis))

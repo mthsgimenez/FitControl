@@ -18,8 +18,10 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
         }
 
         if (auth instanceof JwtAuthenticationToken jwtAuth) {
-            String schema = jwtAuth.getToken().getClaim("schema");
-            return schema != null ? schema : defaultSchema;
+            String tenantUUID = jwtAuth.getToken().getClaim("tenant");
+            return tenantUUID == null
+                    ? defaultSchema
+                    : "tenant_" + tenantUUID.split("-")[0];
         }
 
         return defaultSchema;
