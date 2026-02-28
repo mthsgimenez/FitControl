@@ -27,8 +27,8 @@ public class PasswordTokenController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/resend-token")
-    public ResponseEntity<?> resendToken(@RequestBody @Valid ResendTokenRequestDTO data) {
+    @PostMapping("/request-token")
+    public ResponseEntity<?> requestNewToken(@RequestBody @Valid RequestNewTokenDTO data) {
         try {
             passwordTokenService.sendPasswordTokenEmail(data.email(), EmailType.PASSWORD_RESET);
         } catch (TokenOnCooldownException e) {
