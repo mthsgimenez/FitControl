@@ -4,8 +4,8 @@ import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.infra.exception.FKConstraintViolationException;
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierException;
 import com.mthsgimenez.fitcontrol.user.User;
-import com.mthsgimenez.fitcontrol.user.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +16,16 @@ public class PersonService {
 
     private final PersonRepository personRepository;
     private final RefreshTokenService refreshTokenService;
+    private final ResourcePatternResolver resourcePatternResolver;
 
     public PersonService(
             PersonRepository personRepository,
-            RefreshTokenService refreshTokenService
+            RefreshTokenService refreshTokenService,
+            ResourcePatternResolver resourcePatternResolver
     ) {
         this.personRepository = personRepository;
         this.refreshTokenService = refreshTokenService;
+        this.resourcePatternResolver = resourcePatternResolver;
     }
 
     public Person createPerson(PersonDTO data, User authUser) {
@@ -69,5 +72,15 @@ public class PersonService {
         }
 
         refreshTokenService.revokeRefreshTokensFromUser(userId);
+    }
+
+    public Person updateById(Integer personId, UpdatePersonDTO data) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), personId));
+
+        person.setName(data.name());
+        person.setLastName(data.lastName());
+
+        return personRepository.save(person);
     }
 }

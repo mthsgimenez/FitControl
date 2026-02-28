@@ -1,7 +1,6 @@
 package com.mthsgimenez.fitcontrol.person;
 
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,5 +54,13 @@ public class PersonController {
         personService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PersonResponseDTO> updateById(@PathVariable Integer id, @Valid @RequestBody UpdatePersonDTO data) {
+        Person updatedPerson = personService.updateById(id, data);
+        PersonResponseDTO response = personMapper.toResponseDTO(updatedPerson);
+
+        return ResponseEntity.ok(response);
     }
 }
