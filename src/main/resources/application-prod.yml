@@ -1,0 +1,17 @@
+spring:
+  web:
+    error:
+      include-stacktrace: never
+      include-message: never
+      include-binding-errors: never
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:?Must set DB_HOST env var}:${DB_PORT:?Must set DB_PORT env var}/${DB_NAME:?Must set DB_NAME env var}
+    username: ${DB_USERNAME:?Must set DB_USERNAME env var}
+    password: ${DB_PASSWORD:?Must set DB_PASSWORD env var}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:?Must set REDIS_HOST env var}
+      port: ${REDIS_PORT:?Must set REDIS_PORT env var}
+      password: ${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}

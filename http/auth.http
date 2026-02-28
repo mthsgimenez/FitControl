@@ -1,0 +1,52 @@
+@email =
+@password =
+@cnpj =
+
+###
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}
+
+###
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "verificationCode": "",
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "cnpj": "{{cnpj}}",
+  "postalCode": "{{$random.integer(10000000,99999999)}}",
+  "legalName": "{{$random.company.name}}",
+  "tradeName": "{{$random.company.name}}"
+}
+
+###
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+ %}
+
+###
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+ %}

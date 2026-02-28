@@ -1,77 +1,46 @@
 spring:
   application:
     name: fitcontrol
-  datasource:
-    driver-class-name: org.postgresql.Driver
+
+  profiles:
+    default: dev
+
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+
   flyway:
     locations: classpath:db/migration/public
+
   mail:
-    host: ${SMTP_HOST}
+    host: ${SMTP_HOST:?Must set SMTP_HOST env var}
     port: ${SMTP_PORT:587}
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    username: ${SMTP_USERNAME:?Must set SMTP_USERNAME env var}
+    password: ${SMTP_PASSWORD:?Must set SMTP_PASSWORD env var}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-        from: ${SMTP_FROM}
+        from: ${SMTP_FROM:?Must set SMTP_FROM env var}
     default-encoding: utf-8
+
   messages:
     basename: messages/messages
+
 app:
   jwt:
-    secret: ${JWT_SECRET}
-    expiration_ms: ${JWT_EXPIRATION_MS:3600000}
+    secret: ${JWT_SECRET:?Must set JWT_SECRET env var}
+    expiration_ms: ${JWT_EXPIRATION_MS:900000}
     issuer: ${JWT_ISSUER:api}
+
+  refresh_token:
+    expiration_minutes: ${REFRESH_TOKEN_EXPIRATION_MINUTES:10080}
+
   migration:
     tenant-location: ${MIGRATION_TENANT_LOCATION:classpath:db/migration/tenant}
 
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fitcontrol}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:root}
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  mail:
-    properties:
-      mail:
-        debug: true
-
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  web:
-    error:
-      include-stacktrace: never
-      include-message: never
-      include-binding-errors: never
-  datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
+  frontend:
+    url: ${FRONTEND_URL:?Must set FRONTEND_URL env var}
+    set-password-endpoint: ${FRONTEND_PASSWORD_ENDPOINT:set-password}

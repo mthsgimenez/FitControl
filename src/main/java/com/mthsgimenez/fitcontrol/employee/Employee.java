@@ -1,19 +1,24 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.employee;
 
 import com.mthsgimenez.fitcontrol.person.Person;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
-@Table(name = "members")
-public class Member {
+@Table(name = "employees")
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "admission_date", nullable = false)
+    private LocalDate admissionDate;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "person_id", nullable = false)
