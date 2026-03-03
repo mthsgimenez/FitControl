@@ -1,0 +1,53 @@
+@memberId =
+
+###
+< {%
+    function randomPastDate(maxDaysAgo) {
+        const now = new Date();
+        const daysAgo = Math.floor(Math.random() * maxDaysAgo);
+        const date = new Date(now);
+        date.setDate(now.getDate() - daysAgo);
+        return date.toISOString().split('T')[0];
+    }
+
+    request.variables.set("birthDate", randomPastDate(3650));
+%}
+POST {{baseUrl}}/member
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "email": "{{$random.internet.emailAddress}}",
+  "person": {
+    "birthDate": "{{birthDate}}",
+    "cpf": "",
+    "lastName": "{{$random.name.lastName}}",
+    "name": "{{$random.name.firstName}}"
+  },
+  "goal": "",
+  "trainingLevel": "",
+  "restrictions": ""
+}
+
+###
+GET {{baseUrl}}/member
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/member/{{memberId}}
+Authorization: Bearer {{accessToken}}
+
+###
+PUT {{baseUrl}}/member/{{memberId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "goal": "",
+  "trainingLevel": "",
+  "restrictions": ""
+}
+
+###
+DELETE {{baseUrl}}/member/{{memberId}}
+Authorization: Bearer {{accessToken}}

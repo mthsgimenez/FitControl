@@ -42,6 +42,9 @@ CREATE TABLE people (
 CREATE TABLE members (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     person_id integer NOT NULL REFERENCES people(id),
+    goal varchar(50) NOT NULL,
+    training_level varchar(50) NOT NULL,
+    restrictions text,
     UNIQUE (person_id)
 );
 

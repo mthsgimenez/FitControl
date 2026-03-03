@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.member;
 
 import com.mthsgimenez.fitcontrol.person.Person;
 import jakarta.persistence.*;
@@ -18,4 +18,13 @@ public class Member {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
+
+    @Column(name = "goal", nullable = false)
+    private String goal;
+
+    @Column(name = "training_level", nullable = false)
+    private String trainingLevel;
+
+    @Column(name = "restrictions")
+    private String restrictions;
 }
