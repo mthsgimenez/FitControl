@@ -68,4 +68,8 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
+    public boolean hasRole(RoleType role) {
+        return roles.stream().anyMatch(r -> RoleType.valueOf(r.getNameUppercaseWithoutPrefix()).equals(role));
+    }
 }

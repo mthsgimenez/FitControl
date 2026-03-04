@@ -1,6 +1,7 @@
 package com.mthsgimenez.fitcontrol.model;
 
 import com.mthsgimenez.fitcontrol.member.Member;
+import com.mthsgimenez.fitcontrol.routine.RoutineDay;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

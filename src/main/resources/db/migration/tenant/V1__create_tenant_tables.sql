@@ -79,7 +79,7 @@ CREATE TABLE routines (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name varchar(50) NOT NULL,
     member_id integer NOT NULL REFERENCES members(id),
-    employee_id integer NULL REFERENCES employees(id),
+    created_by integer NOT NULL REFERENCES public.users(id),
     UNIQUE (name, member_id)
 );
 

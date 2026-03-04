@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.routine;
 
 import com.mthsgimenez.fitcontrol.exercise.Exercise;
 import jakarta.persistence.*;
@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 @Getter
 @Setter
 @Entity
-@Table(name = "routine_day_exercises", uniqueConstraints = {@UniqueConstraint(name = "routine_day_exercises_exercise_order_routine_day_id_key",
-        columnNames = {
-                "exercise_order",
-                "routine_day_id"})})
+@Table(name = "routine_day_exercises", uniqueConstraints = {
+        @UniqueConstraint(name = "routine_day_exercises_exercise_order_routine_day_id_key",
+                columnNames = {"exercise_order", "routine_day_id"})
+})
 public class RoutineDayExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +39,4 @@ public class RoutineDayExercise {
 
     @Column(name = "notes", length = Integer.MAX_VALUE)
     private String notes;
-
-
 }
