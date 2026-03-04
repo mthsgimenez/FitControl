@@ -1,0 +1,79 @@
+@routineTemplateId = 1
+
+###
+POST {{baseUrl}}/routine-template
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Push Pull Legs",
+  "days": [
+    {
+      "dayOrder": 1,
+      "exercises": [
+        {
+          "exerciseId": 1,
+          "exerciseOrder": 1
+        },
+        {
+          "exerciseId": 2,
+          "exerciseOrder": 2
+        }
+      ]
+    },
+    {
+      "dayOrder": 2,
+      "exercises": [
+        {
+          "exerciseId": 3,
+          "exerciseOrder": 1
+        }
+      ]
+    }
+  ]
+}
+
+###
+GET {{baseUrl}}/routine-template
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/routine-template/{{routineTemplateId}}
+Authorization: Bearer {{accessToken}}
+
+###
+PUT {{baseUrl}}/routine-template/{{routineTemplateId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Routine",
+  "days": [
+    {
+      "dayOrder": 1,
+      "exercises": [
+        {
+          "exerciseId": 1,
+          "exerciseOrder": 1
+        }
+      ]
+    },
+    {
+      "dayOrder": 3,
+      "exercises": [
+        {
+          "exerciseId": 2,
+          "exerciseOrder": 1
+        },
+        {
+          "exerciseId": 4,
+          "exerciseOrder": 2
+        }
+      ]
+    }
+  ]
+}
+
+###
+DELETE {{baseUrl}}/routine-template/{{routineTemplateId}}
+Authorization: Bearer {{accessToken}}

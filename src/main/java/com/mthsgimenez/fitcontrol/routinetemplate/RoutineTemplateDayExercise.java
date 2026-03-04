@@ -1,11 +1,9 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.routinetemplate;
 
 import com.mthsgimenez.fitcontrol.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -21,7 +19,6 @@ public class RoutineTemplateDayExercise {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "routine_template_day_id", nullable = false)
     private RoutineTemplateDay routineTemplateDay;
 
@@ -31,6 +28,4 @@ public class RoutineTemplateDayExercise {
 
     @Column(name = "exercise_order", nullable = false)
     private Integer exerciseOrder;
-
-
 }
