@@ -24,12 +24,14 @@ public class ExerciseController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
     public ResponseEntity<List<ExerciseCategory>> getCategories() {
         List<ExerciseCategory> categories = exerciseService.getCategories();
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
     public ResponseEntity<ExerciseCategory> getCategoryById(@PathVariable Integer id) {
         ExerciseCategory category = exerciseService.getCategoryById(id);
         return ResponseEntity.ok(category);
@@ -50,6 +52,7 @@ public class ExerciseController {
     }
 
     @GetMapping("/{categoryId}/exercise")
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
     public ResponseEntity<List<ExerciseResponseDTO>> getExercisesByCategory(
             @PathVariable Integer categoryId
     ) {
@@ -61,6 +64,7 @@ public class ExerciseController {
     }
 
     @GetMapping("/{categoryId}/exercise/{exerciseId}")
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
     public ResponseEntity<ExerciseResponseDTO> getExerciseById(
             @PathVariable Integer categoryId,
             @PathVariable Integer exerciseId
