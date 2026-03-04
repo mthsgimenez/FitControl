@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.model;
 
+import com.mthsgimenez.fitcontrol.exercise.Exercise;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,0 +1,52 @@
+@categoryId =
+
+###
+GET {{baseUrl}}/category
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/category/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+POST {{baseUrl}}/category
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+###
+DELETE {{baseUrl}}/category/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/category/{{categoryId}}/exercise
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/category/{{categoryId}}/exercise/{{exerciseId}}
+Authorization: Bearer {{accessToken}}
+
+###
+POST {{baseUrl}}/category/{{categoryId}}/exercise
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+###
+PUT {{baseUrl}}/category/{{categoryId}}/exercise/{{exerciseId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+###
+DELETE {{baseUrl}}/category/{{categoryId}}/exercise/{{exerciseId}}
+Authorization: Bearer {{accessToken}}

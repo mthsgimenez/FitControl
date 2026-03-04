@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.model;
+package com.mthsgimenez.fitcontrol.exercise;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,6 +21,4 @@ public class Exercise {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private ExerciseCategory category;
-
-
 }
