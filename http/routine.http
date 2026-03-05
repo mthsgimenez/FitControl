@@ -1,4 +1,5 @@
-@routineId = 1
+@routineId = 4
+@memberId = 3
 
 ###
 POST {{baseUrl}}/routine
@@ -41,11 +42,11 @@ Content-Type: application/json
 }
 
 ###
-GET {{baseUrl}}/routine
+GET {{baseUrl}}/routine/{{routineId}}
 Authorization: Bearer {{accessToken}}
 
 ###
-GET {{baseUrl}}/routine/{{routineId}}
+GET {{baseUrl}}/routine/member/{{memberId}}
 Authorization: Bearer {{accessToken}}
 
 ###
