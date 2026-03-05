@@ -1,0 +1,27 @@
+@workoutId = 1
+@exerciseId = 1
+
+###
+POST {{baseUrl}}/workout
+Authorization: Bearer {{accessToken}}
+
+###
+POST {{baseUrl}}/workout/{{workoutId}}/exercise
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "exerciseId": 1
+}
+
+###
+POST {{baseUrl}}/workout/{{workoutId}}/exercise/{{exerciseId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "exerciseId": 1,
+  "repetitions": 12,
+  "weight": 15.0,
+  "notes": "abrobrinha"
+}

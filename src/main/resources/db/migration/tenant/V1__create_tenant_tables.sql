@@ -105,7 +105,7 @@ CREATE TABLE workouts (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     workout_date date NOT NULL,
     member_id integer NOT NULL REFERENCES members(id),
-    routine_day_id integer NULL REFERENCES routine_days(id)
+    UNIQUE (member_id, workout_date)
 );
 
 CREATE TABLE performed_exercises (
@@ -113,7 +113,7 @@ CREATE TABLE performed_exercises (
     workout_id integer NOT NULL REFERENCES workouts(id) ON DELETE CASCADE,
     exercise_id integer NOT NULL REFERENCES exercises(id),
     exercise_order integer NOT NULL,
-    UNIQUE (workout_id, exercise_order)
+    UNIQUE (exercise_id, workout_id)
 );
 
 CREATE TABLE performed_sets (
@@ -122,6 +122,5 @@ CREATE TABLE performed_sets (
     set_order integer NOT NULL,
     weight float NOT NULL,
     repetitions integer NOT NULL,
-    notes text NULL,
-    UNIQUE (set_order, performed_exercise_id)
+    notes text NULL
 );
