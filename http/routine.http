@@ -7,17 +7,22 @@ Content-Type: application/json
 
 {
   "name": "Push Pull Legs",
+  "memberId": 1,
   "days": [
     {
       "dayOrder": 1,
       "exercises": [
         {
           "exerciseId": 1,
-          "exerciseOrder": 1
+          "exerciseOrder": 1,
+          "reps": 12,
+          "series": 3
         },
         {
           "exerciseId": 2,
-          "exerciseOrder": 2
+          "exerciseOrder": 2,
+          "reps": 8,
+          "series": 4
         }
       ]
     },
@@ -26,7 +31,9 @@ Content-Type: application/json
       "exercises": [
         {
           "exerciseId": 3,
-          "exerciseOrder": 1
+          "exerciseOrder": 1,
+          "reps": 8,
+          "series": 4
         }
       ]
     }
@@ -47,27 +54,34 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "name": "Updated Routine",
+  "name": "Updated routine",
   "days": [
     {
       "dayOrder": 1,
       "exercises": [
         {
           "exerciseId": 1,
-          "exerciseOrder": 1
+          "exerciseOrder": 1,
+          "reps": 12,
+          "series": 3
+        },
+        {
+          "exerciseId": 2,
+          "exerciseOrder": 2,
+          "reps": 8,
+          "series": 4
         }
       ]
     },
     {
-      "dayOrder": 3,
+      "dayOrder": 2,
       "exercises": [
         {
-          "exerciseId": 2,
-          "exerciseOrder": 1
-        },
-        {
-          "exerciseId": 4,
-          "exerciseOrder": 2
+          "exerciseId": 3,
+          "exerciseOrder": 1,
+          "reps": 8,
+          "series": 4,
+          "notes": "Última série até a falha"
         }
       ]
     }

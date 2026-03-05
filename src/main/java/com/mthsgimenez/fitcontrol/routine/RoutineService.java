@@ -44,7 +44,8 @@ public class RoutineService {
     }
 
     private Member determineMember(Integer memberId, User authUser) {
-        boolean isInstructor = authUser.hasRole(RoleType.INSTRUCTOR);
+        boolean isInstructor = authUser.hasRole(RoleType.INSTRUCTOR) ||
+                authUser.hasRole(RoleType.OWNER);
         boolean isMember = authUser.hasRole(RoleType.MEMBER);
 
         if (isInstructor && memberId != null) {

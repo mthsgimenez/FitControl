@@ -1,5 +1,6 @@
 package com.mthsgimenez.fitcontrol.routine;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -10,11 +11,11 @@ import java.util.List;
 public record RoutineDTO(
         @NotBlank @Length(max = 50) String name,
         Integer memberId,
-        @NotEmpty List<RoutineDayDTO> days
+        @Valid @NotEmpty List<RoutineDayDTO> days
 ) {
     public static record RoutineDayDTO(
             @NotNull Integer dayOrder,
-            @NotEmpty List<RoutineExerciseDTO> exercises
+            @Valid @NotEmpty List<RoutineExerciseDTO> exercises
     ) {}
 
     public static record RoutineExerciseDTO(
