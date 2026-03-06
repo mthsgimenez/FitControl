@@ -23,7 +23,8 @@ public class Member {
     private String goal;
 
     @Column(name = "training_level", nullable = false)
-    private String trainingLevel;
+    @Enumerated(EnumType.STRING)
+    private TrainingLevel trainingLevel;
 
     @Column(name = "restrictions")
     private String restrictions;

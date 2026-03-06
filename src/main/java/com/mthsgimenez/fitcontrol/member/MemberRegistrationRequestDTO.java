@@ -3,7 +3,9 @@ package com.mthsgimenez.fitcontrol.member;
 import com.mthsgimenez.fitcontrol.person.PersonRequestDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,8 +13,8 @@ public record MemberRegistrationRequestDTO(
         Integer personId,
         @Valid PersonRequestDTO person,
         @Email String email,
-        @NotNull String goal,
-        @NotNull String trainingLevel,
+        @NotBlank @Length(max = 50) String goal,
+        @NotNull TrainingLevel trainingLevel,
         String restrictions
 ) {
     public MemberRegistrationRequestDTO {

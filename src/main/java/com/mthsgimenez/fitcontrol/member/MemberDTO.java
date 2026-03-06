@@ -5,6 +5,6 @@ import com.mthsgimenez.fitcontrol.person.Person;
 public record MemberDTO(
         Person person,
         String goal,
-        String trainingLevel,
+        TrainingLevel trainingLevel,
         String restrictions
 ) {}
