@@ -12,6 +12,7 @@ public interface WorkoutMapper {
     @Mapping(target = "exercises", source = "exercises")
     WorkoutFullResponseDTO toFullDto(Workout workout);
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "exerciseId", source = "exercise.id")
     @Mapping(target = "exerciseName", source = "exercise.name")
     @Mapping(target = "sets", source = "sets")
@@ -19,6 +20,7 @@ public interface WorkoutMapper {
             PerformedExercise exercise
     );
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "weight", source = "weight")
     @Mapping(target = "repetitions", source = "repetitions")
     @Mapping(target = "notes", source = "notes")

@@ -112,8 +112,7 @@ CREATE TABLE performed_exercises (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     workout_id integer NOT NULL REFERENCES workouts(id) ON DELETE CASCADE,
     exercise_id integer NOT NULL REFERENCES exercises(id),
-    exercise_order integer NOT NULL,
-    UNIQUE (exercise_id, workout_id)
+    exercise_order integer NOT NULL
 );
 
 CREATE TABLE performed_sets (

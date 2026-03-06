@@ -1,5 +1,8 @@
 @workoutId = 1
 @exerciseId = 1
+@performedExerciseId = 1
+@setId = 1
+@memberId = 1
 
 ###
 POST {{baseUrl}}/workout
@@ -15,13 +18,43 @@ Content-Type: application/json
 }
 
 ###
-POST {{baseUrl}}/workout/{{workoutId}}/exercise/{{exerciseId}}
+POST {{baseUrl}}/workout/{{workoutId}}/exercise/{{performedExerciseId}}/set
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "exerciseId": 1,
-  "repetitions": 12,
-  "weight": 15.0,
-  "notes": "abrobrinha"
+  "repetitions": 10,
+  "weight": 15.0
 }
+
+###
+PUT {{baseUrl}}/workout/{{workoutId}}/exercise/{{performedExerciseId}}/set/{{setId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "repetitions": 10,
+  "weight": 20.0,
+  "notes": "updated"
+}
+
+###
+DELETE {{baseUrl}}/workout/{{workoutId}}/exercise/{{performedExerciseId}}/set/{{setId}}
+Authorization: Bearer {{accessToken}}
+
+###
+DELETE {{baseUrl}}/workout/{{workoutId}}/exercise/{{performedExerciseId}}
+Authorization: Bearer {{accessToken}}
+
+###
+DELETE {{baseUrl}}/workout/{{workoutId}}
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/workout/{{workoutId}}
+Authorization: Bearer {{accessToken}}
+
+###
+# GET {{baseUrl}}/workout/member/{{memberId}}?page=0&size=10&sort=workoutDate,desc
+GET {{baseUrl}}/workout/member/{{memberId}}
+Authorization: Bearer {{accessToken}}

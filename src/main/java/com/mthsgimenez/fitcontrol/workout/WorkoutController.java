@@ -3,6 +3,10 @@ package com.mthsgimenez.fitcontrol.workout;
 import com.mthsgimenez.fitcontrol.user.User;
 import com.mthsgimenez.fitcontrol.user.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,10 +51,9 @@ public class WorkoutController {
     public ResponseEntity<WorkoutFullResponseDTO> createWorkout(Authentication auth) {
         User user = getUserFromAuthentication(auth);
 
-        Workout newWorkout = workoutService.createWorkout(user);
-        WorkoutFullResponseDTO response = workoutMapper.toFullDto(newWorkout);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        Workout workout = workoutService.createWorkout(user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(workoutMapper.toFullDto(workout));
     }
 
     @PostMapping("/{workoutId}/exercise")
@@ -61,24 +64,119 @@ public class WorkoutController {
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.addExerciseToWorkout(workoutId, data.exerciseId(), user);
-        WorkoutFullResponseDTO response = workoutMapper.toFullDto(workout);
+        Workout workout = workoutService.addExerciseToWorkout(
+                workoutId,
+                data.exerciseId(),
+                user
+        );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(workoutMapper.toFullDto(workout));
     }
 
-    @PostMapping("/{workoutId}/exercise/{exerciseId}")
-    public ResponseEntity<WorkoutFullResponseDTO> addPerformedExercise(
+    @PostMapping("/{workoutId}/exercise/{performedExerciseId}/set")
+    public ResponseEntity<WorkoutFullResponseDTO> addSet(
             @PathVariable Integer workoutId,
-            @PathVariable Integer exerciseId,
+            @PathVariable Integer performedExerciseId,
             @RequestBody @Valid SetDTO data,
             Authentication auth
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.addSetToExercise(workoutId, exerciseId, data, user);
-        WorkoutFullResponseDTO response = workoutMapper.toFullDto(workout);
+        Workout workout = workoutService.addSetToExercise(
+                workoutId,
+                performedExerciseId,
+                data,
+                user
+        );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(workoutMapper.toFullDto(workout));
+    }
+
+    @PutMapping("/{workoutId}/exercise/{performedExerciseId}/set/{setId}")
+    public ResponseEntity<WorkoutFullResponseDTO> updateSet(
+            @PathVariable Integer workoutId,
+            @PathVariable Integer performedExerciseId,
+            @PathVariable Integer setId,
+            @RequestBody @Valid SetDTO data,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        Workout workout = workoutService.updateSet(
+                workoutId,
+                performedExerciseId,
+                setId,
+                data,
+                user
+        );
+
+        return ResponseEntity.ok(workoutMapper.toFullDto(workout));
+    }
+
+    @DeleteMapping("/{workoutId}")
+    public ResponseEntity<Void> deleteWorkout(
+            @PathVariable Integer workoutId,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        workoutService.deleteWorkout(workoutId, user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{workoutId}/exercise/{performedExerciseId}")
+    public ResponseEntity<Void> deleteExercise(
+            @PathVariable Integer workoutId,
+            @PathVariable Integer performedExerciseId,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        workoutService.deleteExercise(workoutId, performedExerciseId, user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{workoutId}/exercise/{performedExerciseId}/set/{setId}")
+    public ResponseEntity<Void> deleteSet(
+            @PathVariable Integer workoutId,
+            @PathVariable Integer performedExerciseId,
+            @PathVariable Integer setId,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        workoutService.deleteSet(workoutId, performedExerciseId, setId, user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
+    @GetMapping("/{workoutId}")
+    public ResponseEntity<WorkoutFullResponseDTO> getWorkout(
+            @PathVariable Integer workoutId,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        Workout workout = workoutService.findWorkout(workoutId, user);
+        return ResponseEntity.ok(workoutMapper.toFullDto(workout));
+    }
+
+    @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<Page<WorkoutResponseDTO>> getMemberWorkouts(
+            @PathVariable Integer memberId,
+            @PageableDefault(sort = "workoutDate", direction = Sort.Direction.DESC)
+            Pageable pageable,
+            Authentication auth
+    ) {
+        User user = getUserFromAuthentication(auth);
+
+        Page<WorkoutResponseDTO> response =
+                workoutService.getMemberWorkouts(memberId, pageable, user)
+                        .map(workoutMapper::toSimpleDto);
+
+        return ResponseEntity.ok(response);
     }
 }
