@@ -13,12 +13,10 @@ public record RoutineTemplateDTO(
 ) {
 
     public static record TemplateDayDTO(
-            @NotNull Integer dayOrder,
             @NotEmpty List<TemplateExerciseDTO> exercises
     ) {}
 
     public static record TemplateExerciseDTO(
-            @NotNull Integer exerciseId,
-            @NotNull Integer exerciseOrder
+            @NotNull Integer exerciseId
     ) {}
 }

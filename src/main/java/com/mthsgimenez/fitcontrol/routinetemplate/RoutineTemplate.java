@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,9 +30,10 @@ public class RoutineTemplate {
             orphanRemoval = true
     )
     @OrderBy("dayOrder ASC")
-    private Set<RoutineTemplateDay> days = new LinkedHashSet<>();
+    private List<RoutineTemplateDay> days = new ArrayList<>();
 
     public void addDay(RoutineTemplateDay day) {
+        day.setDayOrder(days.size() + 1);
         days.add(day);
         day.setRoutineTemplate(this);
     }
@@ -40,6 +41,9 @@ public class RoutineTemplate {
     public void removeDay(RoutineTemplateDay day) {
         days.remove(day);
         day.setRoutineTemplate(null);
+        for (int i = 0; i < days.size(); i++) {
+            days.get(i).setDayOrder(i + 1);
+        }
     }
 
     public void clearDays() {

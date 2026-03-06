@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,9 +34,10 @@ public class RoutineTemplateDay {
             orphanRemoval = true
     )
     @OrderBy("exerciseOrder ASC")
-    private Set<RoutineTemplateDayExercise> exercises = new LinkedHashSet<>();
+    private List<RoutineTemplateDayExercise> exercises = new ArrayList<>();
 
     public void addExercise(RoutineTemplateDayExercise exercise) {
+        exercise.setExerciseOrder(exercises.size() + 1);
         exercises.add(exercise);
         exercise.setRoutineTemplateDay(this);
     }
@@ -44,6 +45,9 @@ public class RoutineTemplateDay {
     public void removeExercise(RoutineTemplateDayExercise exercise) {
         exercises.remove(exercise);
         exercise.setRoutineTemplateDay(null);
+        for (int i = 0; i < exercises.size(); i++) {
+            exercises.get(i).setExerciseOrder(i + 1);
+        }
     }
 
     public void clearExercises() {

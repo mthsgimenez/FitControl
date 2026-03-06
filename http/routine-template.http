@@ -9,15 +9,12 @@ Content-Type: application/json
   "name": "Push Pull Legs",
   "days": [
     {
-      "dayOrder": 1,
       "exercises": [
         {
-          "exerciseId": 1,
-          "exerciseOrder": 1
+          "exerciseId": 1
         },
         {
-          "exerciseId": 2,
-          "exerciseOrder": 2
+          "exerciseId": 2
         }
       ]
     },
@@ -25,8 +22,7 @@ Content-Type: application/json
       "dayOrder": 2,
       "exercises": [
         {
-          "exerciseId": 3,
-          "exerciseOrder": 1
+          "exerciseId": 3
         }
       ]
     }
@@ -50,24 +46,19 @@ Content-Type: application/json
   "name": "Updated Routine",
   "days": [
     {
-      "dayOrder": 1,
       "exercises": [
         {
-          "exerciseId": 1,
-          "exerciseOrder": 1
+          "exerciseId": 1
         }
       ]
     },
     {
-      "dayOrder": 3,
       "exercises": [
         {
-          "exerciseId": 2,
-          "exerciseOrder": 1
+          "exerciseId": 2
         },
         {
-          "exerciseId": 4,
-          "exerciseOrder": 2
+          "exerciseId": 4
         }
       ]
     }

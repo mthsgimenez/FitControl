@@ -9,13 +9,11 @@ public record RoutineTemplateFullResponseDTO(
 ) {
 
     public static record TemplateDayDTO(
-            Integer dayOrder,
             List<TemplateExerciseDTO> exercises
     ) {}
 
     public static record TemplateExerciseDTO(
             Integer exerciseId,
-            String exerciseName,
-            Integer exerciseOrder
+            String exerciseName
     ) {}
 }

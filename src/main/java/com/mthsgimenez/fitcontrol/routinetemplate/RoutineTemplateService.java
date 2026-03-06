@@ -36,20 +36,16 @@ public class RoutineTemplateService {
     }
 
     public RoutineTemplate getRoutineTemplateById(Integer id) {
-        return routineTemplateRepository.findCompleteTemplateById(id)
-                .orElseThrow(() -> new NotFoundWithIdentifierException(
-                        "Template", id
-                ));
+        return routineTemplateRepository.findById(id)
+                .orElseThrow(() -> new NotFoundWithIdentifierException("Template", id));
     }
 
     public RoutineTemplate updateRoutineTemplate(
             Integer id,
             RoutineTemplateDTO dto
     ) {
-        RoutineTemplate template = routineTemplateRepository.findCompleteTemplateById(id)
-                .orElseThrow(() -> new NotFoundWithIdentifierException(
-                        "Template", id
-                ));
+        RoutineTemplate template = routineTemplateRepository.findById(id)
+                .orElseThrow(() -> new NotFoundWithIdentifierException("Template", id));
 
         template.setName(dto.name());
         template.clearDays();
@@ -61,9 +57,7 @@ public class RoutineTemplateService {
 
     public void deleteRoutineTemplate(Integer id) {
         RoutineTemplate template = routineTemplateRepository.findById(id)
-                .orElseThrow(() -> new NotFoundWithIdentifierException(
-                        "Template", id
-                ));
+                .orElseThrow(() -> new NotFoundWithIdentifierException("Template", id));
 
         routineTemplateRepository.delete(template);
     }
@@ -73,14 +67,12 @@ public class RoutineTemplateService {
 
         for (RoutineTemplateDTO.TemplateDayDTO dayDTO : dayDTOs) {
             RoutineTemplateDay day = new RoutineTemplateDay();
-            day.setDayOrder(dayDTO.dayOrder());
             template.addDay(day);
 
             if (dayDTO.exercises() == null) continue;
 
             for (RoutineTemplateDTO.TemplateExerciseDTO exerciseDTO : dayDTO.exercises()) {
                 RoutineTemplateDayExercise dayExercise = new RoutineTemplateDayExercise();
-                dayExercise.setExerciseOrder(exerciseDTO.exerciseOrder());
 
                 Exercise exercise = exerciseService.getExerciseById(exerciseDTO.exerciseId());
                 dayExercise.setExercise(exercise);
