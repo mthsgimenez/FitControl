@@ -1,8 +1,11 @@
 package com.mthsgimenez.fitcontrol.infra.exception;
 
 import com.mthsgimenez.fitcontrol.auth.refreshtokens.InvalidTokenException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
@@ -91,5 +96,29 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         problem.setDetail(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
+    }
+
+    private static final Pattern POSTGRES_DETAIL_PATTERN = Pattern.compile("Key \\(([^)]+)\\)=\\(([^)]+)\\)");
+    @org.springframework.web.bind.annotation.ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleUniqueConstraint(DataIntegrityViolationException ex) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String detailMessage = "";
+
+        Throwable cause = ex.getCause();
+        if (cause instanceof ConstraintViolationException cve) {
+            String sqlMessage = cve.getSQLException().getMessage();
+            if (sqlMessage != null && sqlMessage.toLowerCase().contains("duplicate key value violates unique constraint")) {
+                Matcher matcher = POSTGRES_DETAIL_PATTERN.matcher(sqlMessage);
+                if (matcher.find()) {
+                    String field = matcher.group(1);
+                    String value = matcher.group(2);
+                    detailMessage = String.format("Conflicting value: field '%s' with value '%s' already exists", field, value);
+                }
+            }
+        }
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detailMessage);
+        problemDetail.setTitle(status.getReasonPhrase());
+        return problemDetail;
     }
 }
