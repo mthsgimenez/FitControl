@@ -6,8 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,9 +35,10 @@ public class RoutineDay {
             orphanRemoval = true
     )
     @OrderBy("exerciseOrder ASC")
-    private Set<RoutineDayExercise> exercises = new LinkedHashSet<>();
+    private List<RoutineDayExercise> exercises = new ArrayList<>();
 
     public void addExercise(RoutineDayExercise exercise) {
+        exercise.setExerciseOrder(exercises.size() + 1);
         exercises.add(exercise);
         exercise.setRoutineDay(this);
     }
@@ -45,6 +46,9 @@ public class RoutineDay {
     public void removeExercise(RoutineDayExercise exercise) {
         exercises.remove(exercise);
         exercise.setRoutineDay(null);
+        for (int i = 0; i < exercises.size(); i++) {
+            exercises.get(i).setExerciseOrder(i + 1);
+        }
     }
 
     public void clearExercises() {

@@ -12,7 +12,6 @@ public interface RoutineMapper {
     @Mapping(target = "days", source = "days")
     RoutineFullResponseDTO toFullDto(Routine routine);
 
-    @Mapping(target = "dayOrder", source = "dayOrder")
     @Mapping(target = "exercises", source = "exercises")
     RoutineFullResponseDTO.RoutineDayDTO toDayDto(
             RoutineDay day
@@ -20,7 +19,6 @@ public interface RoutineMapper {
 
     @Mapping(target = "exerciseId", source = "exercise.id")
     @Mapping(target = "exerciseName", source = "exercise.name")
-    @Mapping(target = "exerciseOrder", source = "exerciseOrder")
     @Mapping(target = "reps", source = "reps")
     @Mapping(target = "series", source = "series")
     @Mapping(target = "notes", source = "notes")

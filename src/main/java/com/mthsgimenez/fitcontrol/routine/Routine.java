@@ -1,6 +1,5 @@
 package com.mthsgimenez.fitcontrol.routine;
 
-import com.mthsgimenez.fitcontrol.employee.Employee;
 import com.mthsgimenez.fitcontrol.member.Member;
 import com.mthsgimenez.fitcontrol.user.User;
 import jakarta.persistence.*;
@@ -8,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -41,9 +40,10 @@ public class Routine {
             orphanRemoval = true
     )
     @OrderBy("dayOrder ASC")
-    private Set<RoutineDay> days = new LinkedHashSet<>();
+    private List<RoutineDay> days = new ArrayList<>();
 
     public void addDay(RoutineDay day) {
+        day.setDayOrder(days.size() + 1);
         days.add(day);
         day.setRoutine(this);
     }
@@ -51,6 +51,9 @@ public class Routine {
     public void removeDay(RoutineDay day) {
         days.remove(day);
         day.setRoutine(null);
+        for (int i = 0; i < days.size(); i++) {
+            days.get(i).setDayOrder(i + 1);
+        }
     }
 
     public void clearDays() {

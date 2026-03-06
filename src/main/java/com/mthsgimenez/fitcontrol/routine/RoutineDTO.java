@@ -14,13 +14,11 @@ public record RoutineDTO(
         @Valid @NotEmpty List<RoutineDayDTO> days
 ) {
     public static record RoutineDayDTO(
-            @NotNull Integer dayOrder,
             @Valid @NotEmpty List<RoutineExerciseDTO> exercises
     ) {}
 
     public static record RoutineExerciseDTO(
             @NotNull Integer exerciseId,
-            @NotNull Integer exerciseOrder,
             @NotNull Integer reps,
             @NotNull Integer series,
             String notes

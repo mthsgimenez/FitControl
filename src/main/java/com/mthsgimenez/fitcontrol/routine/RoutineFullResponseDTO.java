@@ -11,14 +11,12 @@ public record RoutineFullResponseDTO(
 ) {
 
     public static record RoutineDayDTO(
-            Integer dayOrder,
             List<RoutineExerciseDTO> exercises
     ) {}
 
     public static record RoutineExerciseDTO(
             Integer exerciseId,
             String exerciseName,
-            Integer exerciseOrder,
             Integer reps,
             Integer series,
             String notes

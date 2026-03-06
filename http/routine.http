@@ -1,5 +1,5 @@
-@routineId = 4
-@memberId = 3
+@routineId = 2
+@memberId = 1
 
 ###
 POST {{baseUrl}}/routine
@@ -11,28 +11,23 @@ Content-Type: application/json
   "memberId": 1,
   "days": [
     {
-      "dayOrder": 1,
       "exercises": [
         {
           "exerciseId": 1,
-          "exerciseOrder": 1,
           "reps": 12,
           "series": 3
         },
         {
           "exerciseId": 2,
-          "exerciseOrder": 2,
           "reps": 8,
           "series": 4
         }
       ]
     },
     {
-      "dayOrder": 2,
       "exercises": [
         {
           "exerciseId": 3,
-          "exerciseOrder": 1,
           "reps": 8,
           "series": 4
         }
@@ -58,28 +53,23 @@ Content-Type: application/json
   "name": "Updated routine",
   "days": [
     {
-      "dayOrder": 1,
       "exercises": [
         {
           "exerciseId": 1,
-          "exerciseOrder": 1,
           "reps": 12,
           "series": 3
         },
         {
           "exerciseId": 2,
-          "exerciseOrder": 2,
           "reps": 8,
           "series": 4
         }
       ]
     },
     {
-      "dayOrder": 2,
       "exercises": [
         {
           "exerciseId": 3,
-          "exerciseOrder": 1,
           "reps": 8,
           "series": 4,
           "notes": "Última série até a falha"

@@ -125,12 +125,10 @@ public class RoutineService {
 
         for (RoutineDTO.RoutineDayDTO dayDTO : dayDTOs) {
             RoutineDay day = new RoutineDay();
-            day.setDayOrder(dayDTO.dayOrder());
             routine.addDay(day);
 
             for (RoutineDTO.RoutineExerciseDTO exDTO : dayDTO.exercises()) {
                 RoutineDayExercise ex = new RoutineDayExercise();
-                ex.setExerciseOrder(exDTO.exerciseOrder());
                 ex.setReps(exDTO.reps());
                 ex.setSeries(exDTO.series());
                 ex.setNotes(exDTO.notes());
