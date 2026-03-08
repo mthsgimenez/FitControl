@@ -16,21 +16,17 @@ import java.util.UUID;
 @RequestMapping("/member")
 @PreAuthorize("hasRole('MANAGER')")
 public class MemberController {
-
     private final MemberRegistrationService memberRegistrationService;
     private final UserRepository userRepository;
-    private final MemberMapper memberMapper;
     private final MemberService memberService;
 
     public MemberController(
             MemberRegistrationService memberRegistrationService,
             UserRepository userRepository,
-            MemberMapper memberMapper,
             MemberService memberService
     ) {
         this.memberRegistrationService = memberRegistrationService;
         this.userRepository = userRepository;
-        this.memberMapper = memberMapper;
         this.memberService = memberService;
     }
 
@@ -42,16 +38,11 @@ public class MemberController {
         if (!(auth instanceof JwtAuthenticationToken jwtAuth)) {
             throw new RuntimeException("Unauthorized");
         }
-
-        String userUUIDString = jwtAuth.getToken().getSubject();
-        UUID userUUID = UUID.fromString(userUUIDString);
+        UUID userUUID = UUID.fromString(jwtAuth.getToken().getSubject());
         User authUser = userRepository.findByUuid(userUUID)
                 .orElseThrow(() -> new RuntimeException("Something went wrong"));
-
-        Member newMember = memberRegistrationService.registerNewMember(data, authUser);
-        MemberResponseDTO responseDTO = memberMapper.toResponseDTO(newMember);
-
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(
+                memberRegistrationService.registerNewMemberAsDto(data, authUser));
     }
 
     @PutMapping("/{id}")
@@ -59,34 +50,22 @@ public class MemberController {
             @PathVariable Integer id,
             @Valid @RequestBody UpdateMemberDTO data
     ) {
-        Member updatedMember = memberService.editMember(id, data);
-        MemberResponseDTO response = memberMapper.toResponseDTO(updatedMember);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(memberService.editMemberAsDto(id, data));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MemberResponseDTO> getMember(@PathVariable Integer id) {
-        Member member = memberService.findById(id);
-        MemberResponseDTO response = memberMapper.toResponseDTO(member);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(memberService.findByIdAsDto(id));
     }
 
     @GetMapping
     public ResponseEntity<List<MemberResponseDTO>> getMembers() {
-        List<Member> members = memberService.findAll();
-        List<MemberResponseDTO> responseList = members.stream()
-                .map(memberMapper::toResponseDTO)
-                .toList();
-
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(memberService.findAllAsDto());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Integer id) {
         memberService.deleteById(id);
-
         return ResponseEntity.noContent().build();
     }
 }

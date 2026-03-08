@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class MemberRegistrationService {
 
     private final MemberService memberService;
@@ -20,22 +21,24 @@ public class MemberRegistrationService {
     private final PersonService personService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RandomStringUtil randomStringUtil;
+    private final MemberMapper memberMapper;
 
     public MemberRegistrationService(
             MemberService memberService,
             UserService userService,
             PersonService personService,
             ApplicationEventPublisher applicationEventPublisher,
-            RandomStringUtil randomStringUtil
+            RandomStringUtil randomStringUtil,
+            MemberMapper memberMapper
     ) {
         this.memberService = memberService;
         this.userService = userService;
         this.personService = personService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.randomStringUtil = randomStringUtil;
+        this.memberMapper = memberMapper;
     }
 
-    @Transactional
     public Member registerNewMember(MemberRegistrationRequestDTO data, User authUser) {
         if (data.person() == null) {
             Person existingPerson = personService.findPersonById(data.personId());
@@ -81,5 +84,9 @@ public class MemberRegistrationService {
         );
 
         return personService.createPerson(newPersonData, authUser);
+    }
+
+    public MemberResponseDTO registerNewMemberAsDto(MemberRegistrationRequestDTO data, User authUser) {
+        return memberMapper.toResponseDTO(registerNewMember(data, authUser));
     }
 }

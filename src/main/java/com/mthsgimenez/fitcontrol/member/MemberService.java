@@ -12,21 +12,26 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RoleService roleService;
     private final UserRepository userRepository;
+    private final MemberMapper memberMapper;
 
-    public MemberService(MemberRepository memberRepository,
-                         RoleService roleService,
-                         UserRepository userRepository) {
+    public MemberService(
+            MemberRepository memberRepository,
+            RoleService roleService,
+            UserRepository userRepository,
+            MemberMapper memberMapper
+    ) {
         this.memberRepository = memberRepository;
         this.roleService = roleService;
         this.userRepository = userRepository;
+        this.memberMapper = memberMapper;
     }
 
-    @Transactional
     public Member createMember(MemberDTO data) {
         Person person = data.person();
         User user = person.getUser();
@@ -46,7 +51,6 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
-    @Transactional
     public Member editMember(Integer memberId, UpdateMemberDTO data) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() ->
@@ -61,6 +65,7 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    @Transactional(readOnly = true)
     public Member findById(Integer memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() ->
@@ -71,7 +76,6 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    @Transactional
     public void deleteById(Integer memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() ->
@@ -88,5 +92,25 @@ public class MemberService {
         } catch (DataIntegrityViolationException e) {
             throw new FKConstraintViolationException(Member.class.getSimpleName(), memberId);
         }
+    }
+
+    public MemberResponseDTO createMemberAsDto(MemberDTO data) {
+        return memberMapper.toResponseDTO(createMember(data));
+    }
+
+    public MemberResponseDTO editMemberAsDto(Integer memberId, UpdateMemberDTO data) {
+        return memberMapper.toResponseDTO(editMember(memberId, data));
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDTO findByIdAsDto(Integer memberId) {
+        return memberMapper.toResponseDTO(findById(memberId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponseDTO> findAllAsDto() {
+        return findAll().stream()
+                .map(memberMapper::toResponseDTO)
+                .toList();
     }
 }
