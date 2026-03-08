@@ -1,0 +1,37 @@
+@planId = 3
+
+###
+POST {{baseUrl}}/membership-plan
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Trimestral",
+  "price": 250.00,
+  "durationValue": 3,
+  "maxBeneficiaries": 1
+}
+
+###
+PUT {{baseUrl}}/membership-plan/{{planId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Monthly Basic",
+  "price": 109.90,
+  "durationValue": 1,
+  "maxBeneficiaries": 1
+}
+
+###
+DELETE {{baseUrl}}/membership-plan/{{planId}}
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/membership-plan
+Authorization: Bearer {{accessToken}}
+
+###
+GET {{baseUrl}}/membership-plan/{{planId}}
+Authorization: Bearer {{accessToken}}

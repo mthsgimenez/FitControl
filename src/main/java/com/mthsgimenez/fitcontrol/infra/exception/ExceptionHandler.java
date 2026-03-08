@@ -121,4 +121,20 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setTitle(status.getReasonPhrase());
         return problemDetail;
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UniqueConstraintViolatedException.class)
+    public ResponseEntity<Object> handleUniqueConstraintViolatedException(UniqueConstraintViolatedException ex) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        ProblemDetail problem = ProblemDetail.forStatus(status);
+        problem.setTitle(status.getReasonPhrase());
+        problem.setDetail(String.format(
+                "%s with %s = '%s' already exists",
+                ex.getEntity(),
+                ex.getField(),
+                ex.getConflictingValue()
+        ));
+
+        return ResponseEntity.status(status).body(problem);
+    }
 }

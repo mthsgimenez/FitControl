@@ -11,11 +11,11 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
 
     @Override
     public Object resolveCurrentTenantIdentifier() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String manual = TenantContext.getTenantSchema();
+        if (manual != null) return manual;
 
-        if (auth == null || !auth.isAuthenticated()) {
-            return defaultSchema;
-        }
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) return defaultSchema;
 
         if (auth instanceof JwtAuthenticationToken jwtAuth) {
             String tenantUUID = jwtAuth.getToken().getClaim("tenant");
@@ -23,7 +23,6 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
                     ? defaultSchema
                     : "tenant_" + tenantUUID.split("-")[0];
         }
-
         return defaultSchema;
     }
 

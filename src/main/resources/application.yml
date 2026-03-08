@@ -44,3 +44,10 @@ app:
   frontend:
     url: ${FRONTEND_URL:?Must set FRONTEND_URL env var}
     set-password-endpoint: ${FRONTEND_PASSWORD_ENDPOINT:set-password}
+
+  gateway:
+    secret-key: ${GATEWAY_SECRET_KEY:?Must set GATEWAY_SECRET_KEY env var}
+    webhook-key: ${GATEWAY_WEBHOOK_KEY:Must set GATEWAY_WEBHOOK_KEY env var}
+    onboarding:
+      refresh-url: ${FRONTEND_URL}/stripe/onboarding/refresh
+      return-url: ${FRONTEND_URL}/stripe/onboarding/complete

@@ -15,7 +15,7 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "verificationCode": "",
+  "verificationCode": "263127",
   "email": "{{email}}",
   "password": "{{password}}",
   "cnpj": "{{cnpj}}",
@@ -50,3 +50,7 @@ Content-Type: application/json
     client.global.set("accessToken", response.body.accessToken);
     client.global.set("refreshToken", response.body.refreshToken);
  %}
+
+###
+POST {{baseUrl}}/api/stripe/onboarding-link
+Authorization: Bearer {{accessToken}}

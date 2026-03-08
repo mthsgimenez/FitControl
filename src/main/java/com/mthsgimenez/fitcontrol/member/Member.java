@@ -28,4 +28,7 @@ public class Member {
 
     @Column(name = "restrictions")
     private String restrictions;
+
+    @Column(name = "gateway_customer_id")
+    private String gatewayCustomerId;
 }

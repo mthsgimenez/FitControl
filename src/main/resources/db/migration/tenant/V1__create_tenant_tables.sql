@@ -42,6 +42,7 @@ CREATE TABLE people (
 CREATE TABLE members (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     person_id integer NOT NULL REFERENCES people(id),
+    gateway_customer_id varchar(255),
     goal varchar(50) NOT NULL,
     training_level varchar(50) NOT NULL,
     restrictions text,
@@ -59,20 +60,44 @@ CREATE TABLE membership_plans (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name varchar(50) NOT NULL UNIQUE,
     price numeric(10,2) NOT NULL,
-    membership_duration_unit duration_unit NOT NULL,
-    membership_duration_value integer NOT NULL
+    gateway_price_id varchar(255),
+    duration_value integer NOT NULL,
+    max_beneficiaries integer DEFAULT 1,
+    is_active boolean NOT NULL DEFAULT true
 );
 
-CREATE TABLE memberships (
+CREATE TABLE subscriptions (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     membership_plan_id integer NOT NULL REFERENCES membership_plans(id),
     payer_id integer NOT NULL REFERENCES members(id),
-    member_id integer NOT NULL REFERENCES members(id),
-    subscribed_at date NOT NULL,
+    gateway_subscription_id varchar(255),
+    gateway_status varchar(50),
     start_date date NOT NULL,
     end_date date NOT NULL,
-    CHECK (start_date <= end_date),
-    status membership_status NOT NULL
+    cancelled_at timestamp,
+    gateway_current_period_start date,
+    gateway_current_period_end date,
+    status varchar(50) NOT NULL
+);
+
+CREATE TABLE subscription_members (
+    subscription_id integer NOT NULL REFERENCES subscriptions(id) ON DELETE CASCADE,
+    member_id integer NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+    PRIMARY KEY (subscription_id, member_id)
+);
+
+CREATE TABLE payments (
+    id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    subscription_id integer NOT NULL REFERENCES subscriptions(id),
+    gateway varchar(255) NOT NULL,
+    gateway_payment_id varchar(255) NOT NULL,
+    gateway_invoice_id varchar(255),
+    amount numeric(10,2) NOT NULL,
+    currency varchar(10) NOT NULL,
+    status varchar(50) NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now(),
+    paid_at timestamp,
+    UNIQUE (gateway, gateway_payment_id)
 );
 
 CREATE TABLE routines (

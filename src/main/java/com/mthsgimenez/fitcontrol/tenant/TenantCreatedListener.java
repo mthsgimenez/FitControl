@@ -17,6 +17,6 @@ public class TenantCreatedListener {
     @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onTenantCreated(TenantCreatedEvent event) {
-        schemaService.createSchemaAndMigrate(event.schemaName());
+        schemaService.createSchemaAndMigrate(event.tenant().getSchemaName());
     }
 }

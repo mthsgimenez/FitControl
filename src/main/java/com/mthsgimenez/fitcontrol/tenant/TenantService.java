@@ -35,7 +35,7 @@ public class TenantService {
         tenantRepository.save(newTenant);
 
         applicationEventPublisher.publishEvent(
-                new TenantCreatedEvent(schemaName)
+                new TenantCreatedEvent(newTenant, data.ownerEmail())
         );
 
         return newTenant;

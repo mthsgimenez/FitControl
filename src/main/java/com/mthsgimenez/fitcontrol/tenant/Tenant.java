@@ -41,4 +41,10 @@ public class Tenant {
 
     @Column(name = "schema_name", nullable = false, length = 50)
     private String schemaName;
+
+    @Column(name = "gateway_account_id")
+    private String gatewayAccountId;
+
+    @Column(name = "gateway_product_id")
+    private String gatewayProductId;
 }

@@ -37,7 +37,8 @@ public class TenantRegistrationService {
                 data.cnpj(),
                 data.postalCode(),
                 data.tradeName(),
-                data.legalName()
+                data.legalName(),
+                data.email()
         );
 
         Tenant newTenant = tenantService.createTenant(tenantData);
