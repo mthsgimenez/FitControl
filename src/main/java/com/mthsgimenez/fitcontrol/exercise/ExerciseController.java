@@ -13,14 +13,11 @@ import java.util.List;
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
-    private final ExerciseMapper exerciseMapper;
 
     public ExerciseController(
-            ExerciseService exerciseService,
-            ExerciseMapper exerciseMapper
+            ExerciseService exerciseService
     ) {
         this.exerciseService = exerciseService;
-        this.exerciseMapper = exerciseMapper;
     }
 
     @GetMapping
@@ -56,11 +53,7 @@ public class ExerciseController {
     public ResponseEntity<List<ExerciseResponseDTO>> getExercisesByCategory(
             @PathVariable Integer categoryId
     ) {
-        List<ExerciseResponseDTO> exercises = exerciseService.getExercisesByCategory(categoryId)
-                .stream()
-                .map(exerciseMapper::toResponseDTO)
-                .toList();
-        return ResponseEntity.ok(exercises);
+        return ResponseEntity.ok(exerciseService.getExercisesByCategoryAsDto(categoryId));
     }
 
     @GetMapping("/{categoryId}/exercise/{exerciseId}")
@@ -71,10 +64,7 @@ public class ExerciseController {
     ) {
         exerciseService.getCategoryById(categoryId);
 
-        ExerciseResponseDTO response = exerciseMapper.toResponseDTO(
-                exerciseService.getExerciseById(exerciseId)
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(exerciseService.getExerciseByIdAsDto(exerciseId));
     }
 
     @PostMapping("/{categoryId}/exercise")
@@ -82,10 +72,9 @@ public class ExerciseController {
             @PathVariable Integer categoryId,
             @Valid @RequestBody ExerciseDTO data
     ) {
-        ExerciseResponseDTO response = exerciseMapper.toResponseDTO(
-                exerciseService.createExercise(categoryId, data)
+        return ResponseEntity.status(201).body(
+                exerciseService.createExerciseAsDto(categoryId, data)
         );
-        return ResponseEntity.status(201).body(response);
     }
 
     @PutMapping("/{categoryId}/exercise/{exerciseId}")
@@ -94,10 +83,9 @@ public class ExerciseController {
             @PathVariable Integer exerciseId,
             @Valid @RequestBody ExerciseDTO data
     ) {
-        ExerciseResponseDTO response = exerciseMapper.toResponseDTO(
-                exerciseService.updateExercise(exerciseId, categoryId, data)
+        return ResponseEntity.ok(
+                exerciseService.updateExerciseAsDto(exerciseId, categoryId, data)
         );
-        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{categoryId}/exercise/{exerciseId}")
