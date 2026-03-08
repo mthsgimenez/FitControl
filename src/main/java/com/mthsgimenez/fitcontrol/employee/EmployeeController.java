@@ -19,18 +19,15 @@ public class EmployeeController {
 
     private final EmployeeRegistrationService employeeRegistrationService;
     private final UserRepository userRepository;
-    private final EmployeeMapper employeeMapper;
     private final EmployeeService employeeService;
 
     public EmployeeController(
             EmployeeRegistrationService employeeRegistrationService,
             UserRepository userRepository,
-            EmployeeMapper employeeMapper,
             EmployeeService employeeService
     ) {
         this.employeeRegistrationService = employeeRegistrationService;
         this.userRepository = userRepository;
-        this.employeeMapper = employeeMapper;
         this.employeeService = employeeService;
     }
 
@@ -48,40 +45,31 @@ public class EmployeeController {
         User authUser = userRepository.findByUuid(userUUID)
                 .orElseThrow(() -> new RuntimeException("Something went wrong"));
 
-        Employee newEmployee = employeeRegistrationService.registerNewEmployee(data, authUser);
-        EmployeeResponseDTO responseDTO = employeeMapper.toResponseDTO(newEmployee);
-
+        EmployeeResponseDTO responseDTO = employeeRegistrationService.registerNewEmployeeAsDto(data, authUser);
         return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDTO> editEmployeeRoles(@PathVariable Integer id, @RequestBody @Valid EmployeeRolesRequestDTO data) {
-        Employee updatedEmployee = employeeService.editEmployeeRoles(id, data.roles());
-        var response = employeeMapper.toResponseDTO(updatedEmployee);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<EmployeeResponseDTO> editEmployeeRoles(
+            @PathVariable Integer id,
+            @RequestBody @Valid EmployeeRolesRequestDTO data
+    ) {
+        return ResponseEntity.ok(employeeService.editEmployeeRolesAsDto(id, data.roles()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> getEmployee(@PathVariable Integer id) {
-        Employee employee = employeeService.findById(id);
-        var response = employeeMapper.toResponseDTO(employee);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(employeeService.findByIdAsDto(id));
     }
 
     @GetMapping
     public ResponseEntity<List<EmployeeResponseDTO>> getEmployees() {
-        List<Employee> employees = employeeService.findAll();
-        var responseList = employees.stream().map(employeeMapper::toResponseDTO).toList();
-
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(employeeService.findAllAsDto());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {
         employeeService.deleteById(id);
-
         return ResponseEntity.noContent().build();
     }
 }

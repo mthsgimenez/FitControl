@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Service
+@Transactional
 public class EmployeeRegistrationService {
 
     private final EmployeeService employeeService;
@@ -22,22 +23,24 @@ public class EmployeeRegistrationService {
     private final PersonService personService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RandomStringUtil randomStringUtil;
+    private final EmployeeMapper employeeMapper;
 
     public EmployeeRegistrationService(
             EmployeeService employeeService,
             UserService userService,
             PersonService personService,
             ApplicationEventPublisher applicationEventPublisher,
-            RandomStringUtil randomStringUtil
+            RandomStringUtil randomStringUtil,
+            EmployeeMapper employeeMapper
     ) {
         this.employeeService = employeeService;
         this.userService = userService;
         this.personService = personService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.randomStringUtil = randomStringUtil;
+        this.employeeMapper = employeeMapper; // Inject EmployeeMapper
     }
 
-    @Transactional
     public Employee registerNewEmployee(EmployeeRegistrationRequestDTO data, User authUser) {
         if (data.person() == null) {
             return createEmployeeFromExistingPerson(data.personId(), data.admissionDate());
@@ -83,5 +86,15 @@ public class EmployeeRegistrationService {
         );
 
         return personService.createPerson(newPersonData, authUser);
+    }
+
+    public EmployeeResponseDTO registerNewEmployeeAsDto(EmployeeRegistrationRequestDTO data, User authUser) {
+        Employee createdEmployee = registerNewEmployee(data, authUser);
+        return employeeMapper.toResponseDTO(createdEmployee);
+    }
+
+    private EmployeeResponseDTO createEmployeeFromExistingPersonAsDto(Integer personId, LocalDate admissionDate) {
+        Employee createdEmployee = createEmployeeFromExistingPerson(personId, admissionDate);
+        return employeeMapper.toResponseDTO(createdEmployee);
     }
 }
