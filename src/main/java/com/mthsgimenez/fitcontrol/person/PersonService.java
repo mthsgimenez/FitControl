@@ -4,28 +4,28 @@ import com.mthsgimenez.fitcontrol.auth.refreshtokens.RefreshTokenService;
 import com.mthsgimenez.fitcontrol.infra.exception.FKConstraintViolationException;
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierException;
 import com.mthsgimenez.fitcontrol.user.User;
-import jakarta.transaction.Transactional;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class PersonService {
 
     private final PersonRepository personRepository;
     private final RefreshTokenService refreshTokenService;
-    private final ResourcePatternResolver resourcePatternResolver;
+    private final PersonMapper personMapper;
 
     public PersonService(
             PersonRepository personRepository,
             RefreshTokenService refreshTokenService,
-            ResourcePatternResolver resourcePatternResolver
+            PersonMapper personMapper
     ) {
         this.personRepository = personRepository;
         this.refreshTokenService = refreshTokenService;
-        this.resourcePatternResolver = resourcePatternResolver;
+        this.personMapper = personMapper;
     }
 
     public Person createPerson(PersonDTO data, User authUser) {
@@ -44,21 +44,23 @@ public class PersonService {
         return personRepository.save(person);
     }
 
+    @Transactional(readOnly = true)
     public Person findPersonById(Integer id) {
         return personRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), id));
     }
 
+    @Transactional(readOnly = true)
     public Person findPersonByCPF(String cpf) {
         return personRepository.findByCpf(cpf)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), cpf));
     }
 
+    @Transactional(readOnly = true)
     public List<Person> findAll() {
         return personRepository.findAll();
     }
 
-    @Transactional
     public void deleteById(Integer personId) {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(Person.class.getSimpleName(), personId));
@@ -82,5 +84,30 @@ public class PersonService {
         person.setLastName(data.lastName());
 
         return personRepository.save(person);
+    }
+
+    public PersonResponseDTO createPersonAsDto(PersonDTO data, User authUser) {
+        return personMapper.toResponseDTO(createPerson(data, authUser));
+    }
+
+    @Transactional(readOnly = true)
+    public PersonResponseDTO findPersonByIdAsDto(Integer id) {
+        return personMapper.toResponseDTO(findPersonById(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PersonResponseDTO> findAllAsDto() {
+        return personRepository.findAll().stream()
+                .map(personMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PersonResponseDTO findPersonByCPF_AsDto(String cpf) {
+        return personMapper.toResponseDTO(findPersonByCPF(cpf));
+    }
+
+    public PersonResponseDTO updateByIdAsDto(Integer personId, UpdatePersonDTO data) {
+        return personMapper.toResponseDTO(updateById(personId, data));
     }
 }

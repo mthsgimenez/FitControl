@@ -13,54 +13,39 @@ import java.util.List;
 @PreAuthorize("hasRole('MANAGER')")
 @RequestMapping("/person")
 public class PersonController {
-
     private final PersonService personService;
-    private final PersonMapper personMapper;
 
-    public PersonController(PersonService personService,
-                            PersonMapper personMapper
-    ) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
-        this.personMapper = personMapper;
     }
 
     @GetMapping
     public ResponseEntity<List<PersonResponseDTO>> getAll() {
-        List<Person> people = personService.findAll();
-        List<PersonResponseDTO> response = people.stream().map(personMapper::toResponseDTO).toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(personService.findAllAsDto());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponseDTO> getById(@PathVariable Integer id) {
-        Person person = personService.findPersonById(id);
-        PersonResponseDTO response = personMapper.toResponseDTO(person);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(personService.findPersonByIdAsDto(id));
     }
 
     @Validated
     @GetMapping(params = {"cpf"})
     public ResponseEntity<PersonResponseDTO> getByCPF(@RequestParam @CPF String cpf) {
-        Person person = personService.findPersonByCPF(cpf);
-        PersonResponseDTO responseDTO = personMapper.toResponseDTO(person);
-
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(personService.findPersonByCPF_AsDto(cpf));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
         personService.deleteById(id);
-
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonResponseDTO> updateById(@PathVariable Integer id, @Valid @RequestBody UpdatePersonDTO data) {
-        Person updatedPerson = personService.updateById(id, data);
-        PersonResponseDTO response = personMapper.toResponseDTO(updatedPerson);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PersonResponseDTO> updateById(
+            @PathVariable Integer id,
+            @Valid @RequestBody UpdatePersonDTO data
+    ) {
+        return ResponseEntity.ok(personService.updateByIdAsDto(id, data));
     }
 }
