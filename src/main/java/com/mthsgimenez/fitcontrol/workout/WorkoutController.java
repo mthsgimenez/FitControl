@@ -22,16 +22,13 @@ import java.util.UUID;
 public class WorkoutController {
 
     private final WorkoutService workoutService;
-    private final WorkoutMapper workoutMapper;
     private final UserRepository userRepository;
 
     public WorkoutController(
             WorkoutService workoutService,
-            WorkoutMapper workoutMapper,
             UserRepository userRepository
     ) {
         this.workoutService = workoutService;
-        this.workoutMapper = workoutMapper;
         this.userRepository = userRepository;
     }
 
@@ -51,9 +48,8 @@ public class WorkoutController {
     public ResponseEntity<WorkoutFullResponseDTO> createWorkout(Authentication auth) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.createWorkout(user);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(workoutMapper.toFullDto(workout));
+                .body(workoutService.createWorkoutAsDto(user));
     }
 
     @PostMapping("/{workoutId}/exercise")
@@ -64,14 +60,10 @@ public class WorkoutController {
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.addExerciseToWorkout(
-                workoutId,
-                data.exerciseId(),
-                user
-        );
-
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(workoutMapper.toFullDto(workout));
+                .body(workoutService.addExerciseToWorkoutAsDto(
+                        workoutId, data.exerciseId(), user
+                ));
     }
 
     @PostMapping("/{workoutId}/exercise/{performedExerciseId}/set")
@@ -83,15 +75,13 @@ public class WorkoutController {
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.addSetToExercise(
-                workoutId,
-                performedExerciseId,
-                data,
-                user
-        );
-
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(workoutMapper.toFullDto(workout));
+                .body(workoutService.addSetToExerciseAsDto(
+                        workoutId,
+                        performedExerciseId,
+                        data,
+                        user
+                ));
     }
 
     @PutMapping("/{workoutId}/exercise/{performedExerciseId}/set/{setId}")
@@ -104,15 +94,13 @@ public class WorkoutController {
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Workout workout = workoutService.updateSet(
+        return ResponseEntity.ok(workoutService.updateSetAsDto(
                 workoutId,
                 performedExerciseId,
                 setId,
                 data,
                 user
-        );
-
-        return ResponseEntity.ok(workoutMapper.toFullDto(workout));
+        ));
     }
 
     @DeleteMapping("/{workoutId}")
@@ -158,9 +146,7 @@ public class WorkoutController {
             Authentication auth
     ) {
         User user = getUserFromAuthentication(auth);
-
-        Workout workout = workoutService.findWorkout(workoutId, user);
-        return ResponseEntity.ok(workoutMapper.toFullDto(workout));
+        return ResponseEntity.ok(workoutService.findWorkoutAsDto(workoutId, user));
     }
 
     @PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
@@ -173,10 +159,8 @@ public class WorkoutController {
     ) {
         User user = getUserFromAuthentication(auth);
 
-        Page<WorkoutResponseDTO> response =
-                workoutService.getMemberWorkouts(memberId, pageable, user)
-                        .map(workoutMapper::toSimpleDto);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                workoutService.getMemberWorkoutsAsDto(memberId, pageable, user)
+        );
     }
 }

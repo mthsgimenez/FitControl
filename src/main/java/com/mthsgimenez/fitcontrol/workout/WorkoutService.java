@@ -2,17 +2,16 @@ package com.mthsgimenez.fitcontrol.workout;
 
 import com.mthsgimenez.fitcontrol.exercise.Exercise;
 import com.mthsgimenez.fitcontrol.exercise.ExerciseRepository;
-import com.mthsgimenez.fitcontrol.exercise.ExerciseService;
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierException;
 import com.mthsgimenez.fitcontrol.member.Member;
 import com.mthsgimenez.fitcontrol.member.MemberRepository;
 import com.mthsgimenez.fitcontrol.user.RoleType;
 import com.mthsgimenez.fitcontrol.user.User;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -22,16 +21,19 @@ public class WorkoutService {
 
     private final MemberRepository memberRepository;
     private final WorkoutRepository workoutRepository;
-    private final ExerciseService exerciseService;
+    private final ExerciseRepository exerciseRepository;
+    private final WorkoutMapper workoutMapper;
 
     public WorkoutService(
             MemberRepository memberRepository,
             WorkoutRepository workoutRepository,
-            ExerciseService exerciseService
+            ExerciseRepository exerciseRepository,
+            WorkoutMapper workoutMapper
     ) {
         this.memberRepository = memberRepository;
         this.workoutRepository = workoutRepository;
-        this.exerciseService = exerciseService;
+        this.exerciseRepository = exerciseRepository;
+        this.workoutMapper = workoutMapper;
     }
 
     private Member getMemberFromUser(User authUser) {
@@ -75,7 +77,10 @@ public class WorkoutService {
 
     public Workout addExerciseToWorkout(Integer workoutId, Integer exerciseId, User authUser)  {
         Workout workout = getWorkout(workoutId, authUser);
-        Exercise exercise = exerciseService.getExerciseById(exerciseId);
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new NotFoundWithIdentifierException(
+                        Exercise.class.getSimpleName(), exerciseId
+                ));
 
         PerformedExercise performedExercise = new PerformedExercise();
         performedExercise.setExercise(exercise);
@@ -133,6 +138,7 @@ public class WorkoutService {
         exercise.getSets().remove(set);
     }
 
+    @Transactional(readOnly = true)
     public Workout findWorkout(Integer workoutId, User authUser) {
         if (authUser.hasRole(RoleType.INSTRUCTOR) || authUser.hasRole(RoleType.OWNER)) {
             return workoutRepository.findById(workoutId)
@@ -142,6 +148,7 @@ public class WorkoutService {
         return getWorkout(workoutId, authUser);
     }
 
+    @Transactional(readOnly = true)
     public Page<Workout> getMemberWorkouts(Integer memberId, Pageable pageable, User authUser) {
         if (authUser.hasRole(RoleType.INSTRUCTOR) || authUser.hasRole(RoleType.OWNER)) {
             return workoutRepository.findByMemberId(memberId, pageable);
@@ -154,5 +161,68 @@ public class WorkoutService {
         }
 
         return workoutRepository.findByMemberId(memberId, pageable);
+    }
+
+    public WorkoutFullResponseDTO createWorkoutAsDto(User authUser) {
+        return workoutMapper.toFullDto(createWorkout(authUser));
+    }
+
+    public WorkoutFullResponseDTO addExerciseToWorkoutAsDto(
+            Integer workoutId,
+            Integer exerciseId,
+            User authUser
+    ) {
+        return workoutMapper.toFullDto(addExerciseToWorkout(
+                workoutId,
+                exerciseId,
+                authUser
+        ));
+    }
+
+    public WorkoutFullResponseDTO addSetToExerciseAsDto(
+            Integer workoutId,
+            Integer performedExerciseId,
+            SetDTO data,
+            User authUser
+    ) {
+        return workoutMapper.toFullDto(addSetToExercise(
+                workoutId,
+                performedExerciseId,
+                data,
+                authUser
+        ));
+    }
+
+    public WorkoutFullResponseDTO updateSetAsDto(
+            Integer workoutId,
+            Integer performedExerciseId,
+            Integer setId,
+            SetDTO data,
+            User user
+    ) {
+        return workoutMapper.toFullDto(updateSet(
+                workoutId,
+                performedExerciseId,
+                setId,
+                data,
+                user
+        ));
+    }
+
+    @Transactional(readOnly = true)
+    public WorkoutFullResponseDTO findWorkoutAsDto(Integer workoutId, User authUser) {
+        return workoutMapper.toFullDto(
+                findWorkout(workoutId, authUser)
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<WorkoutResponseDTO> getMemberWorkoutsAsDto(
+            Integer memberId,
+            Pageable pageable,
+            User authUser
+    ) {
+        return getMemberWorkouts(memberId, pageable, authUser)
+                .map(workoutMapper::toSimpleDto);
     }
 }

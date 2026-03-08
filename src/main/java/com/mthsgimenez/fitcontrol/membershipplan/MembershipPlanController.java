@@ -19,14 +19,11 @@ import java.util.UUID;
 public class MembershipPlanController {
 
     private final MembershipPlanService membershipPlanService;
-    private final MembershipPlanMapper membershipPlanMapper;
 
     public MembershipPlanController(
-            MembershipPlanService membershipPlanService,
-            MembershipPlanMapper membershipPlanMapper
+            MembershipPlanService membershipPlanService
     ) {
         this.membershipPlanService = membershipPlanService;
-        this.membershipPlanMapper = membershipPlanMapper;
     }
 
     private UUID getTenantUuid(Authentication auth) {
@@ -39,9 +36,8 @@ public class MembershipPlanController {
             @RequestBody @Valid MembershipPlanRequestDTO data,
             Authentication auth
     ) {
-        MembershipPlan plan = membershipPlanService.create(data, getTenantUuid(auth));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(membershipPlanMapper.toDto(plan));
+                .body(membershipPlanService.createAsDto(data, getTenantUuid(auth)));
     }
 
     @PutMapping("/{id}")
@@ -50,8 +46,9 @@ public class MembershipPlanController {
             @RequestBody @Valid MembershipPlanRequestDTO data,
             Authentication auth
     ) {
-        MembershipPlan plan = membershipPlanService.update(id, data, getTenantUuid(auth));
-        return ResponseEntity.ok(membershipPlanMapper.toDto(plan));
+        return ResponseEntity.ok(
+                membershipPlanService.updateAsDto(id, data, getTenantUuid(auth))
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -67,9 +64,7 @@ public class MembershipPlanController {
     @PreAuthorize("hasAnyRole('FINANCE', 'INSTRUCTOR', 'MEMBER', 'MANAGER')")
     public ResponseEntity<List<MembershipPlanResponseDTO>> listActive() {
         return ResponseEntity.ok(
-                membershipPlanService.findAllActive().stream()
-                        .map(membershipPlanMapper::toDto)
-                        .toList()
+                membershipPlanService.findAllActiveAsDto()
         );
     }
 
@@ -77,6 +72,7 @@ public class MembershipPlanController {
     @PreAuthorize("hasAnyRole('FINANCE', 'INSTRUCTOR', 'MEMBER', 'MANAGER')")
     public ResponseEntity<MembershipPlanResponseDTO> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(
-                membershipPlanMapper.toDto(membershipPlanService.findById(id)));
+                membershipPlanService.findByIdAsDto(id)
+        );
     }
 }

@@ -14,23 +14,26 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@Transactional
 public class MembershipPlanService {
 
     private final MembershipPlanRepository membershipPlanRepository;
     private final StripePriceService stripePriceService;
     private final TenantRepository tenantRepository;
+    private final MembershipPlanMapper membershipPlanMapper;
 
     public MembershipPlanService(
             MembershipPlanRepository membershipPlanRepository,
             StripePriceService stripePriceService,
-            TenantRepository tenantRepository
+            TenantRepository tenantRepository,
+            MembershipPlanMapper membershipPlanMapper
     ) {
         this.membershipPlanRepository = membershipPlanRepository;
         this.stripePriceService = stripePriceService;
         this.tenantRepository = tenantRepository;
+        this.membershipPlanMapper = membershipPlanMapper;
     }
 
-    @Transactional
     public MembershipPlan create(MembershipPlanRequestDTO data, UUID tenantUuid) {
         if (membershipPlanRepository.existsByName(data.name())) {
             throw new UniqueConstraintViolatedException(
@@ -67,7 +70,6 @@ public class MembershipPlanService {
         return membershipPlanRepository.save(plan);
     }
 
-    @Transactional
     public MembershipPlan update(Integer id, MembershipPlanRequestDTO data, UUID tenantUuid) {
         MembershipPlan plan = membershipPlanRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(
@@ -106,7 +108,6 @@ public class MembershipPlanService {
         return membershipPlanRepository.save(plan);
     }
 
-    @Transactional
     public void deactivate(Integer id, UUID tenantUuid) {
         MembershipPlan plan = membershipPlanRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(
@@ -140,5 +141,32 @@ public class MembershipPlanService {
                 .orElseThrow(() -> new NotFoundWithIdentifierException(
                         "Plan", id
                 ));
+    }
+
+    public MembershipPlanResponseDTO createAsDto(
+            MembershipPlanRequestDTO data,
+            UUID tenantUUID
+    ) {
+        return membershipPlanMapper.toDto(create(data, tenantUUID));
+    }
+
+    public MembershipPlanResponseDTO updateAsDto(
+            Integer planId,
+            MembershipPlanRequestDTO data,
+            UUID tenantUUID
+    ) {
+        return membershipPlanMapper.toDto(update(planId, data, tenantUUID));
+    }
+
+    @Transactional(readOnly = true)
+    public List<MembershipPlanResponseDTO> findAllActiveAsDto() {
+        return findAllActive().stream()
+                .map(membershipPlanMapper::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public MembershipPlanResponseDTO findByIdAsDto(Integer id) {
+        return membershipPlanMapper.toDto(findById(id));
     }
 }

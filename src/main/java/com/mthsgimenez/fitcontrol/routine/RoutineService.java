@@ -22,15 +22,18 @@ public class RoutineService {
     private final RoutineRepository routineRepository;
     private final MemberRepository memberRepository;
     private final ExerciseService exerciseService;
+    private final RoutineMapper routineMapper;
 
     public RoutineService(
             RoutineRepository routineRepository,
             MemberRepository memberRepository,
-            ExerciseService exerciseService
+            ExerciseService exerciseService,
+            RoutineMapper routineMapper
     ) {
         this.routineRepository = routineRepository;
         this.memberRepository = memberRepository;
         this.exerciseService = exerciseService;
+        this.routineMapper = routineMapper;
     }
 
     public Routine createRoutine(RoutineDTO dto, User authUser) {
@@ -46,10 +49,12 @@ public class RoutineService {
         return routineRepository.save(routine);
     }
 
+    @Transactional(readOnly = true)
     public Routine findById(Integer routineId, User authUser) {
         return findAccessibleRoutine(routineId, authUser);
     }
 
+    @Transactional(readOnly = true)
     public List<Routine> findByMemberId(Integer memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(Member.class.getSimpleName(), memberId));
@@ -139,5 +144,31 @@ public class RoutineService {
                 day.addExercise(ex);
             }
         }
+    }
+
+    public RoutineFullResponseDTO createRoutineAsDto(
+            RoutineDTO data,
+            User authUser
+    ) {
+        return routineMapper.toFullDto(createRoutine(data, authUser));
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoutineResponseDTO> findByMemberIdAsDto(Integer memberId) {
+        return findByMemberId(memberId)
+                .stream().map(routineMapper::toSimpleDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RoutineFullResponseDTO findByIdAsDto(Integer routineId, User authUser) {
+        return routineMapper.toFullDto(findById(routineId, authUser));
+    }
+
+    public RoutineFullResponseDTO updateRoutineAsDto(
+            Integer routineId, RoutineDTO data, User authUser
+    ) {
+        return routineMapper.toFullDto(
+                updateRoutine(routineId, data, authUser)
+        );
     }
 }

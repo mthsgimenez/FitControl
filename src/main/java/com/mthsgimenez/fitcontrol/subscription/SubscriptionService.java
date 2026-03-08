@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@Transactional
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
@@ -32,6 +33,7 @@ public class SubscriptionService {
     private final StripeCustomerService stripeCustomerService;
     private final StripeCheckoutService stripeCheckoutService;
     private final TenantRepository tenantRepository;
+    private final SubscriptionMapper subscriptionMapper;
 
     public SubscriptionService(
             SubscriptionRepository subscriptionRepository,
@@ -39,7 +41,8 @@ public class SubscriptionService {
             MembershipPlanRepository membershipPlanRepository,
             StripeCustomerService stripeCustomerService,
             StripeCheckoutService stripeCheckoutService,
-            TenantRepository tenantRepository
+            TenantRepository tenantRepository,
+            SubscriptionMapper subscriptionMapper
     ) {
         this.subscriptionRepository = subscriptionRepository;
         this.memberRepository = memberRepository;
@@ -47,9 +50,9 @@ public class SubscriptionService {
         this.stripeCustomerService = stripeCustomerService;
         this.stripeCheckoutService = stripeCheckoutService;
         this.tenantRepository = tenantRepository;
+        this.subscriptionMapper = subscriptionMapper;
     }
 
-    @Transactional
     public String initiateCheckout(Integer planId, User user, UUID tenantUuid) {
         Tenant tenant = tenantRepository.findByUuid(tenantUuid)
                 .orElseThrow(() -> new NotFoundWithIdentifierException(
@@ -87,7 +90,6 @@ public class SubscriptionService {
                 member, plan, tenant.getGatewayAccountId());
     }
 
-    @Transactional
     public void createFromWebhook(com.stripe.model.Subscription stripeSubscription,
                                   Tenant tenant) {
         if (subscriptionRepository.existsByGatewaySubscriptionId(
@@ -132,7 +134,6 @@ public class SubscriptionService {
         log.info("Subscription created for member {}: {}", payer.getId(), subscription.getId());
     }
 
-    @Transactional
     public Subscription addBeneficiary(Integer subscriptionId, Integer beneficiaryMemberId,
                                        User user) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
@@ -164,7 +165,6 @@ public class SubscriptionService {
         return subscriptionRepository.save(subscription);
     }
 
-    @Transactional
     public Subscription removeBeneficiary(Integer subscriptionId, Integer beneficiaryMemberId,
                                           User user) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
@@ -219,5 +219,20 @@ public class SubscriptionService {
         return membershipPlanRepository.findByGatewayPriceId(priceId)
                 .orElseThrow(() -> new IllegalStateException(
                         "No plan found for price: " + priceId));
+    }
+
+    @Transactional(readOnly = true)
+    public SubscriptionResponseDTO findActiveByUserAsDto(User user) {
+        return subscriptionMapper.toDto(findActiveByUser(user));
+    }
+
+    public SubscriptionResponseDTO addBeneficiaryAsDto(
+            Integer subscriptionId,
+            Integer memberId,
+            User user
+    ) {
+        return subscriptionMapper.toDto(addBeneficiary(
+                subscriptionId, memberId, user
+        ));
     }
 }

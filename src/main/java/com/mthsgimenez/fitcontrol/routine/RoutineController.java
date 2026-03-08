@@ -17,16 +17,13 @@ import java.util.UUID;
 public class RoutineController {
 
     private final RoutineService routineService;
-    private final RoutineMapper routineMapper;
     private final UserRepository userRepository;
 
     public RoutineController(
             RoutineService routineService,
-            RoutineMapper routineMapper,
             UserRepository userRepository
     ) {
         this.routineService = routineService;
-        this.routineMapper = routineMapper;
         this.userRepository = userRepository;
     }
 
@@ -37,21 +34,14 @@ public class RoutineController {
     ) {
         User authUser = getAuthUser(auth);
 
-        Routine newRoutine = routineService.createRoutine(data, authUser);
-        RoutineFullResponseDTO response = routineMapper.toFullDto(newRoutine);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                routineService.createRoutineAsDto(data, authUser)
+        );
     }
 
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<RoutineResponseDTO>> getRoutinesByMember(@PathVariable Integer memberId) {
-        List<Routine> routines = routineService.findByMemberId(memberId);
-
-        List<RoutineResponseDTO> response = routines.stream()
-                .map(routineMapper::toSimpleDto)
-                .toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(routineService.findByMemberIdAsDto(memberId));
     }
 
     @GetMapping("/{id}")
@@ -61,10 +51,7 @@ public class RoutineController {
     ) {
         User authUser = getAuthUser(auth);
 
-        Routine routine = routineService.findById(id, authUser);
-        RoutineFullResponseDTO response = routineMapper.toFullDto(routine);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(routineService.findByIdAsDto(id, authUser));
     }
 
     @PutMapping("/{id}")
@@ -75,10 +62,7 @@ public class RoutineController {
     ) {
         User authUser = getAuthUser(auth);
 
-        Routine updatedRoutine = routineService.updateRoutine(id, dto, authUser);
-        RoutineFullResponseDTO response = routineMapper.toFullDto(updatedRoutine);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(routineService.updateRoutineAsDto(id, dto, authUser));
     }
 
     @DeleteMapping("/{id}")

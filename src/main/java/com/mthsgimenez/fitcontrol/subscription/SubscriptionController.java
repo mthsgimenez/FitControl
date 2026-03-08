@@ -19,16 +19,13 @@ import java.util.UUID;
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
-    private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
 
     public SubscriptionController(
             SubscriptionService subscriptionService,
-            SubscriptionMapper subscriptionMapper,
             UserRepository userRepository
     ) {
         this.subscriptionService = subscriptionService;
-        this.subscriptionMapper = subscriptionMapper;
         this.userRepository = userRepository;
     }
 
@@ -56,8 +53,9 @@ public class SubscriptionController {
 
     @GetMapping("/my")
     public ResponseEntity<SubscriptionResponseDTO> getMySubscription(Authentication auth) {
-        Subscription subscription = subscriptionService.findActiveByUser(getUserFromAuth(auth));
-        return ResponseEntity.ok(subscriptionMapper.toDto(subscription));
+        return ResponseEntity.ok(
+                subscriptionService.findActiveByUserAsDto(getUserFromAuth(auth))
+        );
     }
 
     @PostMapping("/{subscriptionId}/members")
@@ -66,9 +64,9 @@ public class SubscriptionController {
             @RequestBody @Valid BeneficiaryRequestDTO data,
             Authentication auth
     ) {
-        Subscription subscription = subscriptionService.addBeneficiary(
-                subscriptionId, data.memberId(), getUserFromAuth(auth));
-        return ResponseEntity.ok(subscriptionMapper.toDto(subscription));
+        return ResponseEntity.ok(subscriptionService.addBeneficiaryAsDto(
+                subscriptionId, data.memberId(), getUserFromAuth(auth)
+        ));
     }
 
     @DeleteMapping("/{subscriptionId}/members/{memberId}")
