@@ -12,46 +12,29 @@ import java.util.List;
 @RequestMapping("/routine-template")
 @PreAuthorize("hasRole('INSTRUCTOR')")
 public class RoutineTemplateController {
-
     private final RoutineTemplateService routineTemplateService;
-    private final RoutineTemplateMapper routineTemplateMapper;
 
-    public RoutineTemplateController(
-            RoutineTemplateService routineTemplateService,
-            RoutineTemplateMapper routineTemplateMapper
-    ) {
+    public RoutineTemplateController(RoutineTemplateService routineTemplateService) {
         this.routineTemplateService = routineTemplateService;
-        this.routineTemplateMapper = routineTemplateMapper;
     }
 
     @PostMapping
     public ResponseEntity<RoutineTemplateFullResponseDTO> createRoutineTemplate(
             @Valid @RequestBody RoutineTemplateDTO data
     ) {
-        RoutineTemplate newTemplate = routineTemplateService.createRoutineTemplate(data);
-
-        RoutineTemplateFullResponseDTO response = routineTemplateMapper.toFullDto(newTemplate);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(routineTemplateService.createRoutineTemplateAsDto(data));
     }
 
     @GetMapping
     public ResponseEntity<List<RoutineTemplateResponseDTO>> getAllRoutineTemplates() {
-        List<RoutineTemplate> templates = routineTemplateService.getAllRoutineTemplates();
-
-        List<RoutineTemplateResponseDTO> response = templates.stream().map(
-                routineTemplateMapper::toSimpleDto).toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(routineTemplateService.getAllRoutineTemplatesAsDto());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoutineTemplateFullResponseDTO> getRoutineTemplate(@PathVariable Integer id) {
-        RoutineTemplate template = routineTemplateService.getRoutineTemplateById(id);
-
-        RoutineTemplateFullResponseDTO response = routineTemplateMapper.toFullDto(template);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<RoutineTemplateFullResponseDTO> getRoutineTemplate(
+            @PathVariable Integer id) {
+        return ResponseEntity.ok(routineTemplateService.getRoutineTemplateByIdAsDto(id));
     }
 
     @PutMapping("/{id}")
@@ -59,17 +42,12 @@ public class RoutineTemplateController {
             @PathVariable Integer id,
             @Valid @RequestBody RoutineTemplateDTO dto
     ) {
-        RoutineTemplate updatedTemplate = routineTemplateService.updateRoutineTemplate(id, dto);
-
-        RoutineTemplateFullResponseDTO response = routineTemplateMapper.toFullDto(updatedTemplate);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(routineTemplateService.updateRoutineTemplateAsDto(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoutineTemplate(@PathVariable Integer id) {
         routineTemplateService.deleteRoutineTemplate(id);
-
         return ResponseEntity.noContent().build();
     }
 }

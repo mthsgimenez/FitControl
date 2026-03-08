@@ -14,13 +14,16 @@ public class RoutineTemplateService {
 
     private final RoutineTemplateRepository routineTemplateRepository;
     private final ExerciseService exerciseService;
+    private final RoutineTemplateMapper routineTemplateMapper;
 
     public RoutineTemplateService(
             RoutineTemplateRepository routineTemplateRepository,
-            ExerciseService exerciseService
+            ExerciseService exerciseService,
+            RoutineTemplateMapper routineTemplateMapper
     ) {
         this.routineTemplateRepository = routineTemplateRepository;
         this.exerciseService = exerciseService;
+        this.routineTemplateMapper = routineTemplateMapper;
     }
 
     public RoutineTemplate createRoutineTemplate(RoutineTemplateDTO dto) {
@@ -31,10 +34,12 @@ public class RoutineTemplateService {
         return routineTemplateRepository.save(template);
     }
 
+    @Transactional(readOnly = true)
     public List<RoutineTemplate> getAllRoutineTemplates() {
         return routineTemplateRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public RoutineTemplate getRoutineTemplateById(Integer id) {
         return routineTemplateRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWithIdentifierException("Template", id));
@@ -80,5 +85,25 @@ public class RoutineTemplateService {
                 day.addExercise(dayExercise);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public RoutineTemplateFullResponseDTO getRoutineTemplateByIdAsDto(Integer id) {
+        return routineTemplateMapper.toFullDto(getRoutineTemplateById(id));
+    }
+
+    public RoutineTemplateFullResponseDTO createRoutineTemplateAsDto(RoutineTemplateDTO dto) {
+        return routineTemplateMapper.toFullDto(createRoutineTemplate(dto));
+    }
+
+    public RoutineTemplateFullResponseDTO updateRoutineTemplateAsDto(Integer id, RoutineTemplateDTO dto) {
+        return routineTemplateMapper.toFullDto(updateRoutineTemplate(id, dto));
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoutineTemplateResponseDTO> getAllRoutineTemplatesAsDto() {
+        return routineTemplateRepository.findAll().stream()
+                .map(routineTemplateMapper::toSimpleDto)
+                .toList();
     }
 }
