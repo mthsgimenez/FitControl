@@ -1,6 +1,6 @@
 package com.mthsgimenez.fitcontrol.paymentgateway;
 
-import com.mthsgimenez.fitcontrol.membership.MembershipPlan;
+import com.mthsgimenez.fitcontrol.membershipplan.MembershipPlan;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
 import com.stripe.net.RequestOptions;

@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.membershipplan;
 
 import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierException;
 import com.mthsgimenez.fitcontrol.infra.exception.UniqueConstraintViolatedException;

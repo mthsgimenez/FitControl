@@ -1,7 +1,7 @@
 package com.mthsgimenez.fitcontrol.paymentgateway;
 
 import com.mthsgimenez.fitcontrol.infra.multitenancy.TenantContext;
-import com.mthsgimenez.fitcontrol.membership.*;
+import com.mthsgimenez.fitcontrol.subscription.*;
 import com.mthsgimenez.fitcontrol.tenant.Tenant;
 import com.mthsgimenez.fitcontrol.tenant.TenantRepository;
 import com.stripe.model.Account;

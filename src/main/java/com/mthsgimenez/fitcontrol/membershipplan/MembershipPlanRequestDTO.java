@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.membershipplan;
 
 import jakarta.validation.constraints.*;
 

@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.membershipplan;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
