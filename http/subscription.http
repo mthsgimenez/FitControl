@@ -1,0 +1,28 @@
+@subscriptionId = 1
+@beneficiaryMemberId = 2
+
+###
+POST {{baseUrl}}/subscriptions/checkout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "planId": 3
+}
+
+###
+GET {{baseUrl}}/subscriptions/my
+Authorization: Bearer {{accessToken}}
+
+###
+POST {{baseUrl}}/subscriptions/{{subscriptionId}}/members
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "memberId": {{beneficiaryMemberId}}
+}
+
+###
+DELETE {{baseUrl}}/subscriptions/{{subscriptionId}}/members/{{beneficiaryMemberId}}
+Authorization: Bearer {{accessToken}}

@@ -8,6 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    open-in-view: false
 
   flyway:
     locations: classpath:db/migration/public
@@ -49,5 +50,8 @@ app:
     secret-key: ${GATEWAY_SECRET_KEY:?Must set GATEWAY_SECRET_KEY env var}
     webhook-key: ${GATEWAY_WEBHOOK_KEY:Must set GATEWAY_WEBHOOK_KEY env var}
     onboarding:
-      refresh-url: ${FRONTEND_URL}/stripe/onboarding/refresh
-      return-url: ${FRONTEND_URL}/stripe/onboarding/complete
+      refresh-url: ${FRONTEND_URL}/api/stripe/onboarding/refresh
+      return-url: ${FRONTEND_URL}/api/stripe/onboarding/complete
+    checkout:
+      success-url: ${FRONTEND_URL}/api/stripe/checkout/success
+      cancel-url: ${FRONTEND_URL}/api/stripe/checkout/cancel

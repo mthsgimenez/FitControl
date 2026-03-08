@@ -1,6 +1,7 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.subscription;
 
 import com.mthsgimenez.fitcontrol.member.Member;
+import com.mthsgimenez.fitcontrol.membershipplan.MembershipPlan;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

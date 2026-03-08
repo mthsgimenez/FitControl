@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.subscription;
 
 public enum SubscriptionStatus {
     ACTIVE,

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 @Component
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
@@ -29,18 +30,18 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
     public Connection getConnection(Object tenantIdentifier) throws SQLException {
         Connection connection = getAnyConnection();
         if (tenantIdentifier != null) {
-            connection.setSchema(tenantIdentifier.toString());
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute("SET search_path TO \"" + tenantIdentifier + "\", public");
+            }
         }
-
         return connection;
     }
 
     @Override
-    public void releaseConnection(
-            Object tenantIdentifier,
-            Connection connection
-    ) throws SQLException {
-        connection.setSchema("public");
+    public void releaseConnection(Object tenantIdentifier, Connection connection) throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("SET search_path TO public");
+        }
         releaseAnyConnection(connection);
     }
 

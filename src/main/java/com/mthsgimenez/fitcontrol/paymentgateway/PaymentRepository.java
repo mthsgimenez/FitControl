@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.membership;
+package com.mthsgimenez.fitcontrol.paymentgateway;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
