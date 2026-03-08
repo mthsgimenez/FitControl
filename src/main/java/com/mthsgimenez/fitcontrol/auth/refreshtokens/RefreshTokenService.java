@@ -46,7 +46,7 @@ public class RefreshTokenService {
         Integer userId = refreshTokenStore.getRefreshTokenUserId(hashedToken)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired refresh token"));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdWithTenant(userId)
                 .orElseThrow(() -> new InvalidTokenException("Invalid or expired refresh token"));
 
         String newRefreshToken = generateAndStoreRefreshToken(user);
