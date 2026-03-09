@@ -27,11 +27,13 @@ public class RoutineTemplateController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'MEMBER')")
     public ResponseEntity<List<RoutineTemplateResponseDTO>> getAllRoutineTemplates() {
         return ResponseEntity.ok(routineTemplateService.getAllRoutineTemplatesAsDto());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'MEMBER')")
     public ResponseEntity<RoutineTemplateFullResponseDTO> getRoutineTemplate(
             @PathVariable Integer id) {
         return ResponseEntity.ok(routineTemplateService.getRoutineTemplateByIdAsDto(id));

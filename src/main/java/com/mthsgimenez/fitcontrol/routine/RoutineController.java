@@ -5,6 +5,7 @@ import com.mthsgimenez.fitcontrol.user.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/routine")
+@PreAuthorize("hasAnyRole('MEMBER', 'INSTRUCTOR')")
 public class RoutineController {
 
     private final RoutineService routineService;

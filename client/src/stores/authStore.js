@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
+import api from "@/api/axios.js";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -9,6 +10,7 @@ export const useAuthStore = defineStore('auth', {
         expiresAt: localStorage.getItem('expiresAt') ? parseInt(localStorage.getItem('expiresAt')) : null,
         roles: JSON.parse(localStorage.getItem('roles') || '[]'),
         email: localStorage.getItem('email') || null,
+        memberId: localStorage.getItem('memberId') ? parseInt(localStorage.getItem('memberId')) : null,
         _refreshTimer: null
     }),
 
@@ -57,6 +59,14 @@ export const useAuthStore = defineStore('auth', {
             )
             const { accessToken, refreshToken, expiresIn } = response.data
             this.setTokens(accessToken, refreshToken, expiresIn)
+
+            if (this.roles.includes('ROLE_MEMBER')) {
+                try {
+                    const { data } = await api.get('/member/me')
+                    this.memberId = data.id
+                    localStorage.setItem('memberId', data.id)
+                } catch (e) {}
+            }
         },
 
         async refresh() {
@@ -92,6 +102,7 @@ export const useAuthStore = defineStore('auth', {
             localStorage.removeItem('expiresAt')
             localStorage.removeItem('roles')
             localStorage.removeItem('email')
+            localStorage.removeItem('memberId')
             router.push('/login')
         }
     }

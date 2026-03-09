@@ -45,6 +45,14 @@ public class MemberController {
                 memberRegistrationService.registerNewMemberAsDto(data, authUser));
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('MEMBER')")
+    public ResponseEntity<MemberResponseDTO> getMyMember(Authentication auth) {
+        JwtAuthenticationToken jwt = (JwtAuthenticationToken) auth;
+        UUID userUuid = UUID.fromString(jwt.getToken().getSubject());
+        return ResponseEntity.ok(memberService.findByUserUuid(userUuid));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<MemberResponseDTO> editMember(
             @PathVariable Integer id,

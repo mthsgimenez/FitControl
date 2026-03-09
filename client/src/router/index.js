@@ -17,9 +17,10 @@ const routes = [
       { path: 'members', component: () => import('@/views/Members.vue') },
       // { path: 'plans', component: () => import('@/views/Plans.vue') },
       // { path: 'subscriptions', component: () => import('@/views/Subscriptions.vue') },
-      // { path: 'exercises', component: () => import('@/views/Exercises.vue') },
-      // { path: 'routine-templates', component: () => import('@/views/RoutineTemplates.vue') },
-      // { path: 'routines', component: () => import('@/views/Routines.vue') },
+      { path: 'exercises', component: () => import('@/views/Exercises.vue') },
+      { path: 'routine-templates', component: () => import('@/views/RoutineTemplates.vue') },
+      { path: 'routines/instructor', component: () => import('@/views/RoutinesInstructor.vue') },
+      { path: 'routines/member', component: () => import('@/views/RoutinesMember.vue') },
       // { path: 'my-plan', component: () => import('@/views/MyPlan.vue') },
       // { path: 'workout', component: () => import('@/views/Workout.vue') },
     ]

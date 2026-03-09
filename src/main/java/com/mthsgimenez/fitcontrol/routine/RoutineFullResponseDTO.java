@@ -1,12 +1,13 @@
 package com.mthsgimenez.fitcontrol.routine;
 
 import java.util.List;
+import java.util.UUID;
 
 public record RoutineFullResponseDTO(
         Integer id,
         String name,
         Integer memberId,
-        Integer createdByUserId,
+        UUID createdByUserId,
         List<RoutineDayDTO> days
 ) {
 

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -72,6 +73,15 @@ public class MemberService {
                         new NotFoundWithIdentifierException(Member.class.getSimpleName(), memberId));
     }
 
+    public MemberResponseDTO findByUserUuid(UUID userUuid) {
+        return memberRepository.findByPersonUserUuid(userUuid)
+                .map(memberMapper::toResponseDTO)
+                .orElseThrow(() -> new NotFoundWithIdentifierException(
+                        Member.class.getSimpleName(), "userUUID: " + userUuid.toString()
+                ));
+    }
+
+    @Transactional(readOnly = true)
     public List<Member> findAll() {
         return memberRepository.findAll();
     }

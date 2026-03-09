@@ -24,12 +24,13 @@ const financeLinks = [
 const instructorLinks = [
   { label: 'Exercícios', to: '/exercises' },
   { label: 'Templates de Fichas', to: '/routine-templates' },
-  { label: 'Fichas de Treino', to: '/routines' },
+  { label: 'Fichas de Treino', to: '/routines/instructor' },
   { label: 'Alunos', to: '/students' }
 ]
+
 const memberLinks = [
   { label: 'Meu Plano', to: '/my-plan' },
-  { label: 'Fichas de Treino', to: '/routines' },
+  { label: 'Minhas Fichas', to: '/routines/member' },
   { label: 'Registrar Treino', to: '/workout' }
 ]
 </script>

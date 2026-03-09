@@ -8,7 +8,7 @@ public interface RoutineMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "memberId", source = "member.id")
-    @Mapping(target = "createdByUserId", source = "createdBy.id")
+    @Mapping(target = "createdByUserId", source = "createdBy.uuid")
     @Mapping(target = "days", source = "days")
     RoutineFullResponseDTO toFullDto(Routine routine);
 
@@ -29,6 +29,6 @@ public interface RoutineMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "memberId", source = "member.id")
-    @Mapping(target = "createdByUserId", source = "createdBy.id")
+    @Mapping(target = "createdByUserId", source = "createdBy.uuid")
     RoutineResponseDTO toSimpleDto(Routine routine);
 }
