@@ -1,4 +1,4 @@
-package com.mthsgimenez.fitcontrol.paymentgateway;
+package com.mthsgimenez.fitcontrol.payment;
 
 import com.mthsgimenez.fitcontrol.subscription.Subscription;
 import jakarta.persistence.*;

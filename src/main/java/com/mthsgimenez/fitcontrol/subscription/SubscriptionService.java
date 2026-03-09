@@ -4,7 +4,11 @@ import com.mthsgimenez.fitcontrol.infra.exception.NotFoundWithIdentifierExceptio
 import com.mthsgimenez.fitcontrol.member.Member;
 import com.mthsgimenez.fitcontrol.member.MemberRepository;
 import com.mthsgimenez.fitcontrol.membershipplan.MembershipPlan;
+import com.mthsgimenez.fitcontrol.membershipplan.MembershipPlanMapper;
 import com.mthsgimenez.fitcontrol.membershipplan.MembershipPlanRepository;
+import com.mthsgimenez.fitcontrol.payment.PaymentMapper;
+import com.mthsgimenez.fitcontrol.payment.PaymentRepository;
+import com.mthsgimenez.fitcontrol.payment.PaymentResponseDTO;
 import com.mthsgimenez.fitcontrol.paymentgateway.StripeCheckoutService;
 import com.mthsgimenez.fitcontrol.paymentgateway.StripeCustomerService;
 import com.mthsgimenez.fitcontrol.tenant.Tenant;
@@ -21,6 +25,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,6 +39,9 @@ public class SubscriptionService {
     private final StripeCheckoutService stripeCheckoutService;
     private final TenantRepository tenantRepository;
     private final SubscriptionMapper subscriptionMapper;
+    private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
+    private final MembershipPlanMapper membershipPlanMapper;
 
     public SubscriptionService(
             SubscriptionRepository subscriptionRepository,
@@ -42,7 +50,10 @@ public class SubscriptionService {
             StripeCustomerService stripeCustomerService,
             StripeCheckoutService stripeCheckoutService,
             TenantRepository tenantRepository,
-            SubscriptionMapper subscriptionMapper
+            SubscriptionMapper subscriptionMapper,
+            PaymentRepository paymentRepository,
+            PaymentMapper paymentMapper,
+            MembershipPlanMapper membershipPlanMapper
     ) {
         this.subscriptionRepository = subscriptionRepository;
         this.memberRepository = memberRepository;
@@ -51,6 +62,9 @@ public class SubscriptionService {
         this.stripeCheckoutService = stripeCheckoutService;
         this.tenantRepository = tenantRepository;
         this.subscriptionMapper = subscriptionMapper;
+        this.paymentRepository = paymentRepository;
+        this.paymentMapper = paymentMapper;
+        this.membershipPlanMapper = membershipPlanMapper;
     }
 
     public String initiateCheckout(Integer planId, User user, UUID tenantUuid) {
@@ -234,5 +248,41 @@ public class SubscriptionService {
         return subscriptionMapper.toDto(addBeneficiary(
                 subscriptionId, memberId, user
         ));
+    }
+
+    public List<SubscriptionAdminResponseDTO> findAllAsDto() {
+        return subscriptionRepository.findAll().stream()
+                .map(this::toAdminDto)
+                .toList();
+    }
+
+    public List<SubscriptionAdminResponseDTO> findByMemberAsDto(Integer memberId) {
+        return subscriptionRepository.findByPayerId(memberId).stream()
+                .map(this::toAdminDto)
+                .toList();
+    }
+
+    private SubscriptionAdminResponseDTO toAdminDto(Subscription subscription) {
+        List<PaymentResponseDTO> payments = paymentRepository
+                .findBySubscriptionId(subscription.getId()).stream()
+                .map(paymentMapper::toDto)
+                .toList();
+        return new SubscriptionAdminResponseDTO(
+                subscription.getId(),
+                subscription.getStatus(),
+                subscription.getStartDate(),
+                subscription.getEndDate(),
+                subscription.getGatewayCurrentPeriodStart(),
+                subscription.getGatewayCurrentPeriodEnd(),
+                membershipPlanMapper.toSummaryDto(subscription.getMembershipPlan()),
+                subscription.getMembers().stream()
+                        .map(m -> new SubscriptionMemberDTO(
+                                m.getId(),
+                                m.getPerson().getName(),
+                                m.getPerson().getLastName()
+                        ))
+                        .collect(Collectors.toSet()),
+                payments
+        );
     }
 }

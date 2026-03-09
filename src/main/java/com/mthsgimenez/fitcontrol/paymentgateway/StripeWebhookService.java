@@ -1,6 +1,8 @@
 package com.mthsgimenez.fitcontrol.paymentgateway;
 
 import com.mthsgimenez.fitcontrol.infra.multitenancy.TenantContext;
+import com.mthsgimenez.fitcontrol.payment.Payment;
+import com.mthsgimenez.fitcontrol.payment.PaymentRepository;
 import com.mthsgimenez.fitcontrol.subscription.Subscription;
 import com.mthsgimenez.fitcontrol.subscription.SubscriptionRepository;
 import com.mthsgimenez.fitcontrol.subscription.SubscriptionService;

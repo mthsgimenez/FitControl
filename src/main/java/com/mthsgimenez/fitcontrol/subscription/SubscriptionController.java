@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -77,5 +78,19 @@ public class SubscriptionController {
     ) {
         subscriptionService.removeBeneficiary(subscriptionId, memberId, getUserFromAuth(auth));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('FINANCE')")
+    public ResponseEntity<List<SubscriptionAdminResponseDTO>> listAll() {
+        return ResponseEntity.ok(subscriptionService.findAllAsDto());
+    }
+
+    @GetMapping("/member/{memberId}")
+    @PreAuthorize("hasRole('FINANCE')")
+    public ResponseEntity<List<SubscriptionAdminResponseDTO>> listByMember(
+            @PathVariable Integer memberId
+    ) {
+        return ResponseEntity.ok(subscriptionService.findByMemberAsDto(memberId));
     }
 }

@@ -11,4 +11,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
     boolean existsByPayerIdAndStatusIn(Integer payerId, List<SubscriptionStatus> statuses);
     Optional<Subscription> findTopByPayerIdAndStatusOrderByStartDateDesc(
             Integer payerId, SubscriptionStatus status);
+    List<Subscription> findByPayerId(Integer payerId);
 }
