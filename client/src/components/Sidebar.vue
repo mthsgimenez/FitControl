@@ -25,13 +25,13 @@ const instructorLinks = [
   { label: 'Exercícios', to: '/exercises' },
   { label: 'Templates de Fichas', to: '/routine-templates' },
   { label: 'Fichas de Treino', to: '/routines/instructor' },
-  { label: 'Alunos', to: '/students' }
+  { label: 'Alunos', to: '/workout/instructor' }
 ]
 
 const memberLinks = [
   { label: 'Meu Plano', to: '/my-plan' },
   { label: 'Minhas Fichas', to: '/routines/member' },
-  { label: 'Registrar Treino', to: '/workout' }
+  { label: 'Registrar Treino', to: '/workout/member' }
 ]
 </script>
 

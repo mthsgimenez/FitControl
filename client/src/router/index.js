@@ -22,7 +22,8 @@ const routes = [
       { path: 'routines/instructor', component: () => import('@/views/RoutinesInstructor.vue') },
       { path: 'routines/member', component: () => import('@/views/RoutinesMember.vue') },
       // { path: 'my-plan', component: () => import('@/views/MyPlan.vue') },
-      // { path: 'workout', component: () => import('@/views/Workout.vue') },
+      { path: 'workout/member', component: () => import('@/views/WorkoutsMember.vue') },
+      { path: 'workout/instructor', component: () => import('@/views/WorkoutsInstructor.vue') },
     ]
   }
 ]
