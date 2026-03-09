@@ -27,7 +27,7 @@ async function handleLogin() {
       }
     }
 
-    router.push('/dashboard')
+    router.push('/')
   } catch (e) {
     error.value = e.response?.data?.detail || 'E-mail ou senha inválidos'
   } finally {

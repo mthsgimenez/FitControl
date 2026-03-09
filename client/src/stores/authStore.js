@@ -1,19 +1,21 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
-        expiresIn: localStorage.getItem('expiresIn') || null,
+        expiresAt: localStorage.getItem('expiresAt') ? parseInt(localStorage.getItem('expiresAt')) : null,
         roles: JSON.parse(localStorage.getItem('roles') || '[]'),
+        email: localStorage.getItem('email') || null,
         _refreshTimer: null
     }),
 
     getters: {
         isAuthenticated: state => !!state.accessToken,
-        isExpired: state => state.expiresIn
-            ? Date.now() >= parseInt(state.expiresIn)
+        isExpired: state => state.expiresAt
+            ? Date.now() >= state.expiresAt
             : true,
         isOwner: state => state.roles.includes('ROLE_OWNER')
     },
@@ -22,13 +24,18 @@ export const useAuthStore = defineStore('auth', {
         setTokens(accessToken, refreshToken, expiresIn) {
             const payload = JSON.parse(atob(accessToken.split('.')[1]))
             this.roles = payload.roles || []
-            localStorage.setItem('roles', JSON.stringify(this.roles))
+            this.email = payload.email || null
+            this.expiresAt = Date.now() + (expiresIn - 30) * 1000
+
             this.accessToken = accessToken
             this.refreshToken = refreshToken
-            this.expiresIn = Date.now() + (expiresIn - 30) * 1000
+
             localStorage.setItem('accessToken', accessToken)
             localStorage.setItem('refreshToken', refreshToken)
-            localStorage.setItem('expiresIn', this.expiresIn)
+            localStorage.setItem('expiresAt', this.expiresAt)
+            localStorage.setItem('roles', JSON.stringify(this.roles))
+            localStorage.setItem('email', this.email)
+
             this.scheduleRefresh(expiresIn - 30)
         },
 
@@ -50,9 +57,6 @@ export const useAuthStore = defineStore('auth', {
             )
             const { accessToken, refreshToken, expiresIn } = response.data
             this.setTokens(accessToken, refreshToken, expiresIn)
-
-            const payload = JSON.parse(atob(accessToken.split('.')[1]))
-            this.roles = payload.roles || []
         },
 
         async refresh() {
@@ -65,8 +69,8 @@ export const useAuthStore = defineStore('auth', {
         },
 
         initializeFromStorage() {
-            if (this.accessToken && this.expiresIn) {
-                const secondsLeft = (parseInt(this.expiresIn) - Date.now()) / 1000
+            if (this.accessToken && this.expiresAt) {
+                const secondsLeft = (this.expiresAt - Date.now()) / 1000
                 if (secondsLeft > 0) {
                     this.scheduleRefresh(secondsLeft)
                 } else {
@@ -79,11 +83,16 @@ export const useAuthStore = defineStore('auth', {
             if (this._refreshTimer) clearTimeout(this._refreshTimer)
             this.accessToken = null
             this.refreshToken = null
-            this.expiresIn = null
+            this.expiresAt = null
+            this.roles = []
+            this.email = null
             this._refreshTimer = null
             localStorage.removeItem('accessToken')
             localStorage.removeItem('refreshToken')
-            localStorage.removeItem('expiresIn')
+            localStorage.removeItem('expiresAt')
+            localStorage.removeItem('roles')
+            localStorage.removeItem('email')
+            router.push('/login')
         }
     }
 })
