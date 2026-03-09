@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore.js';
+import api from "@/api/axios.js";
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -16,6 +17,16 @@ async function handleLogin() {
   loading.value = true
   try {
     await auth.login(email.value, password.value)
+
+    if (auth.isOwner) {
+      const { data } = await api.get('/api/stripe/onboarding-status')
+      if (!data.onboardingComplete) {
+        const { data: linkData } = await api.post('/api/stripe/onboarding-link')
+        window.location.href = linkData.onboardingUrl
+        return
+      }
+    }
+
     router.push('/dashboard')
   } catch (e) {
     error.value = e.response?.data?.detail || 'E-mail ou senha inválidos'

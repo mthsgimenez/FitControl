@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', {
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
         expiresIn: localStorage.getItem('expiresIn') || null,
+        roles: JSON.parse(localStorage.getItem('roles') || '[]'),
         _refreshTimer: null
     }),
 
@@ -13,11 +14,15 @@ export const useAuthStore = defineStore('auth', {
         isAuthenticated: state => !!state.accessToken,
         isExpired: state => state.expiresIn
             ? Date.now() >= parseInt(state.expiresIn)
-            : true
+            : true,
+        isOwner: state => state.roles.includes('ROLE_OWNER')
     },
 
     actions: {
         setTokens(accessToken, refreshToken, expiresIn) {
+            const payload = JSON.parse(atob(accessToken.split('.')[1]))
+            this.roles = payload.roles || []
+            localStorage.setItem('roles', JSON.stringify(this.roles))
             this.accessToken = accessToken
             this.refreshToken = refreshToken
             this.expiresIn = Date.now() + (expiresIn - 30) * 1000
@@ -43,14 +48,11 @@ export const useAuthStore = defineStore('auth', {
                 `${import.meta.env.VITE_API_URL}/auth/login`,
                 { email, password }
             )
-
             const { accessToken, refreshToken, expiresIn } = response.data
-
-            if (!accessToken) {
-                throw new Error('Login falhou: resposta inválida do servidor')
-            }
-
             this.setTokens(accessToken, refreshToken, expiresIn)
+
+            const payload = JSON.parse(atob(accessToken.split('.')[1]))
+            this.roles = payload.roles || []
         },
 
         async refresh() {
