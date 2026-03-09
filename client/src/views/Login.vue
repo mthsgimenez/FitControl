@@ -1,73 +1,74 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore.js';
+
+const router = useRouter()
+const auth = useAuthStore()
+
+const email = ref('')
+const password = ref('')
+const error = ref(null)
+const loading = ref(false)
+
+async function handleLogin() {
+  error.value = null
+  loading.value = true
+  try {
+    await auth.login(email.value, password.value)
+    router.push('/dashboard')
+  } catch (e) {
+    error.value = e.response?.data?.detail || 'E-mail ou senha inválidos'
+  } finally {
+    loading.value = false
+  }
+}
 </script>
+
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
-
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Login</h1>
-        <p class="text-gray-500 mt-2">Entre na sua conta</p>
-      </div>
-
-      <form class="space-y-6">
-
-        <div>
-          <label
-              for="email"
-              class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email
-          </label>
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-sm p-8 bg-white border border-gray-200 shadow-sm">
+      <h1 class="text-2xl font-bold text-black mb-8">Entrar</h1>
+      <form @submit.prevent="handleLogin">
+        <div class="mb-5">
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
           <input
-              id="email"
               type="email"
+              id="email"
+              v-model="email"
+              required
+              class="w-full px-4 py-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black"
               placeholder="seu@email.com"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition"
           />
         </div>
-
-        <div>
-          <label
-              for="password"
-              class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Senha
-          </label>
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+            <router-link to="/reset-password" class="text-sm text-blue-500 hover:text-blue-600">Esqueceu sua senha?</router-link>
+          </div>
           <input
-              id="password"
               type="password"
+              id="password"
+              v-model="password"
+              required
+              class="w-full px-4 py-3 bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:border-black"
               placeholder="••••••••"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition"
           />
         </div>
 
-        <div class="text-sm">
-          <a
-              href="#"
-              class="text-sm text-blue-400 hover:text-blue-600 font-medium"
-          >
-            Esqueceu a senha?
-          </a>
-        </div>
+        <p v-if="error" class="text-red-500 text-sm mb-4">{{ error }}</p>
 
         <button
             type="submit"
-            class="w-full bg-yellow-400 text-gray-900 py-2.5 rounded-lg font-semibold hover:bg-yellow-500 transition"
+            :disabled="loading"
+            class="w-full py-3 px-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold mb-8 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Entrar
+          {{ loading ? 'Entrando...' : 'Acessar Plataforma' }}
         </button>
-
+        <div class="text-center mt-4 pt-6 border-t border-gray-100">
+          <router-link to="/register" class="text-sm text-blue-500 hover:text-blue-600">É dono(a) de uma academia? Clique aqui para se registrar</router-link>
+        </div>
       </form>
-
-      <div class="mt-6 text-center text-sm text-gray-500">
-        É dono de academia?
-        <a href="#" class="text-yellow-500 hover:text-yellow-700 font-medium">
-          Cadastre sua academia
-        </a>
-      </div>
-
     </div>
   </div>
 </template>
-<style scoped>
-</style>

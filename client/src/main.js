@@ -10,4 +10,8 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
+import { useAuthStore } from "@/stores/authStore.js";
+const auth = useAuthStore();
+auth.initializeFromStorage();
+
 app.mount('#app')
