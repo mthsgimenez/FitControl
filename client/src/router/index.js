@@ -12,8 +12,9 @@ const routes = [
     component: MainLayout,
     meta: { requiresAuth: true },
     children: [
-      // { path: 'employees', component: () => import('@/views/Employees.vue') },
-      // { path: 'members', component: () => import('@/views/Members.vue') },
+      { path: 'employees', component: () => import('@/views/Employees.vue') },
+      { path: 'people', component: () => import('@/views/People.vue') },
+      { path: 'members', component: () => import('@/views/Members.vue') },
       // { path: 'plans', component: () => import('@/views/Plans.vue') },
       // { path: 'subscriptions', component: () => import('@/views/Subscriptions.vue') },
       // { path: 'exercises', component: () => import('@/views/Exercises.vue') },

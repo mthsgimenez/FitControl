@@ -1,13 +1,12 @@
 <script setup>
-
 import Sidebar from "@/components/Sidebar.vue";
 </script>
 
 <template>
-  <Sidebar></Sidebar>
-  <router-view></router-view>
+  <div class="flex min-h-screen bg-gray-50">
+    <Sidebar />
+    <main class="flex-1 p-8 overflow-y-auto">
+      <router-view />
+    </main>
+  </div>
 </template>
-
-<style scoped>
-
-</style>
