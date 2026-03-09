@@ -7,11 +7,25 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: postgres
       REDIS_HOST: redis
+      FRONTEND_URL: http://localhost:3030
+    ports:
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile-frontend
+      args:
+        VITE_API_URL: http://localhost:8080
+    ports:
+      - "3030:80"
+    depends_on:
+      - fitcontrol
 
   postgres:
     image: postgres
@@ -38,6 +52,14 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTH_TOKEN}
+    command: http --url=${NGROK_URL} fitcontrol:8080
+    stdin_open: true
+    tty: true
 
 volumes:
   postgres_data:

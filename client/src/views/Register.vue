@@ -58,7 +58,7 @@ async function submitRegistration() {
       tradeName: form.value.tradeName,
       verificationCode: form.value.verificationCode
     })
-    router.push('/register/success')
+    router.push('/login')
   } catch (e) {
     error.value = e.response?.data?.detail || 'Erro ao realizar cadastro'
   } finally {
