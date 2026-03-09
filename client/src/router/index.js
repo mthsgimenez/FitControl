@@ -7,6 +7,8 @@ const routes = [
   { path: '/register', component: () => import('@/views/Register.vue') },
   { path: '/reset-password', component: () => import('@/views/ResetPassword.vue') },
   { path: '/set-password', component: () => import('@/views/SetPassword.vue') },
+  { path: '/api/stripe/onboarding/complete', component: () => import('@/views/OnboardingComplete.vue') },
+  { path: '/api/stripe/onboarding/refresh', component: () => import('@/views/OnboardingRefresh.vue') },
   {
     path: '/',
     component: MainLayout,
@@ -15,15 +17,17 @@ const routes = [
       { path: 'employees', component: () => import('@/views/Employees.vue') },
       { path: 'people', component: () => import('@/views/People.vue') },
       { path: 'members', component: () => import('@/views/Members.vue') },
-      // { path: 'plans', component: () => import('@/views/Plans.vue') },
+      { path: 'plans', component: () => import('@/views/Plans.vue') },
       // { path: 'subscriptions', component: () => import('@/views/Subscriptions.vue') },
       { path: 'exercises', component: () => import('@/views/Exercises.vue') },
       { path: 'routine-templates', component: () => import('@/views/RoutineTemplates.vue') },
       { path: 'routines/instructor', component: () => import('@/views/RoutinesInstructor.vue') },
       { path: 'routines/member', component: () => import('@/views/RoutinesMember.vue') },
-      // { path: 'my-plan', component: () => import('@/views/MyPlan.vue') },
+      { path: 'my-plan', component: () => import('@/views/MyPlan.vue') },
       { path: 'workout/member', component: () => import('@/views/WorkoutsMember.vue') },
       { path: 'workout/instructor', component: () => import('@/views/WorkoutsInstructor.vue') },
+      { path: 'api/stripe/checkout/success', component: () => import('@/views/CheckoutSuccess.vue') },
+      { path: 'api/stripe/checkout/cancel', component: () => import('@/views/CheckoutCancel.vue') },
     ]
   }
 ]
